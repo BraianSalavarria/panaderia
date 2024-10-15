@@ -1,0 +1,187 @@
+{% extends "base/base.html"  %}
+{% block title %} Administrar Productos {% endblock %}
+
+
+{% block contenido %}
+
+
+            <div class="card p-3" style="border-radius: 10px;">
+              <p class="card-title">Administración de Productos</p>
+
+                <form class="formularioRegistrarProducto mb-4 " action="{% url 'ventas:agregar_producto' %}" method="POST">
+                     {% csrf_token %}
+
+                  <div class="row">
+
+                      <div class="col-md-6 me-2">
+                          <div class="form-group">
+                              <label for="descripcionProducto">Descripcion:</label>
+                              <input type="text" class="form-control  form-control-sm " id="descripcionProducto" name="descripcionProducto" placeholder="nombre de producto" required >
+                          </div>
+                      </div>
+
+                      <div class="col-md-4">
+                          <div class="form-group">
+                                <label for="categoriaProducto">Categoria:</label>
+                                <select class="form-select text-dark" id="categoriaProducto" name="categoriaProducto" style="font-size: small;">
+                               {% for categoria in categorias %}
+                                <option value="{{categoria.id}}">{{categoria.nombre}}</option>
+                               {% endfor %}
+                              </select>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="form-group">
+                      <div class="col-md-3">
+                          <label for="precioProducto">Precio:</label>
+                          <input type="number" class="form-control form-control-sm" id="precioProducto" name="precioProducto" pattern="^\d{1,10}$" required min="0" value="0">
+                      </div>
+                  </div>
+
+
+                  <div class="form-group">
+                      <div class="col-md-3">
+                          <label for="cantidadProducto">Cantidad:</label>
+                          <input type="number" class="form-control form-control-sm" id="cantidadProducto" name="cantidadProducto" required min="1" max="100" value="1">
+                      </div>
+                  </div>
+                  <button type="submit" class="btn btn-success btn-sm me-2">registrar</button>
+                  <button type="reset" class="btn btn-danger btn-sm">cancelar</button>
+              </form>
+            <div class="col-md-6">
+                {% if messages %}
+                     {% for message in messages %}
+                         {% if 'success' in message.tags %}
+                            <div  class=" alert alert-success d-flex align-items-center" role="alert">
+                                 <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                                    <div>
+                                                {{message}}
+                                    </div>
+                            </div>
+                            {% elif 'error' in message.tags %}
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                    <div>
+                                                {{message}}
+                                    </div>
+                            </div>
+                         {% endif %}
+                     {% endfor %}
+                {% endif %}
+            </div>
+
+        <!--Tabla para editar o eliminar un producto-->
+
+        <div class="col-md-4 mt-4">
+          <div class="form-group">
+            <i class="icon-magnifier"></i>
+              <label for="buscarProducto">Buscar:</label>
+              <input type="text" class="form-control  form-control-sm " id="buscarProducto" name="buscarProducto" placeholder="nombre de producto" oninput="filtrarTablaProductos()" required >
+          </div>
+        </div>
+              <div class="table-responsive mt-1 mb-4" style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-hover mb-4" id="tablaContenido">
+                  <thead>
+                    <tr>
+                      <th>Codigo</th>
+                      <th>Descripcion</th>
+                      <th>Categoria</th>
+                      <th>Precio</th>
+                      <th>Cantidad</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                        {% for producto in productos %}
+                    <tr>
+                          <td>{{producto.id}}</td>
+                          <td>{{producto.descripcion}}</td>
+                          <td>{{producto.categoria}}</td>
+                          <td>{{producto.precio}}</td>
+                          <td>{{producto.cantidad_disponible}}</td>
+                          <td><button type="button" class="btn btn-warning btn-sm me-2" onclick="modalEditarProducto({{producto.id}},'{{ producto.descripcion|escapejs }}',{{producto.cantidad_disponible}},{{producto.categoria.id}},{{producto.precio}}, )">editar</button> <button type="button" class="btn btn-danger btn-sm" onclick="modalEliminarProducto({{producto.id}})">eliminar</button></td>
+                    </tr>
+                        {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+
+            </div>
+
+
+          <!-- Modal para Editar un Producto-->
+<div class="modal fade" id="modalEditarProducto" tabindex="-1" aria-labelledby="modalEditarProductoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEditarProductoLabel">Editar Categoría</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="background-color: #1C1B29">
+        <form id="formEditarProducto" action="{% url 'ventas:editar_producto' %}" method="POST">
+          {% csrf_token %}
+            <input type="hidden" id="id_producto" name="id_producto">
+             <div class="row">
+
+                      <div class="col-md-6 me-2">
+                          <div class="form-group">
+                              <label for="descripcionProductoM" style="color: #32CD32">Descripcion:</label>
+                              <input type="text" class="form-control  form-control-sm text-white " id="descripcionProductoM" name="descripcionProductoM" placeholder="nombre de producto" required >
+                          </div>
+                      </div>
+
+                      <div class="col-md-4">
+                          <div class="form-group">
+                                <label for="categoriaProductoM" style="color: #32CD32">Categoria:</label>
+                                <select class="form-select text-white" id="categoriaProductoM" name="categoriaProductoM" style="font-size: small;">
+                               {% for categoria in categorias %}
+                                <option value="{{categoria.id}}" class="text-black" >{{categoria.nombre}}</option>
+                               {% endfor %}
+                              </select>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="form-group">
+                      <div class="col-md-3">
+                          <label for="precioProducto" style="color: #32CD32">Precio:</label>
+                          <input type="number" class="form-control form-control-sm text-white" id="precioProductoM" name="precioProductoM" pattern="^\d{1,10}$" required min="0" value="0">
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <div class="col-md-3">
+                          <label for="cantidadProductoM" style="color: #32CD32">Cantidad:</label>
+                          <input type="number" class="form-control form-control-sm text-white" id="cantidadProductoM" name="cantidadProductoM" required min="1" max="100" value="1" >
+                      </div>
+
+                  </div>
+                  <button type="submit" class="btn btn-success btn-sm me-2">guardar cambios</button>
+                  <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal" aria-label="Close">cancelar</button>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- modal para eliminar una producto-->
+<div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminar" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="modal">Eliminar</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center" style="background-color: #1C1B29">
+              <label for="confirmarEliminar" class="form-label form-control-sm" style="color: #32CD32">¿Está seguro?</label><br>
+              <a id="confirmarEliminar" class="btn btn-danger btn-sm mt-3 me-2" href="#">Eliminar</a>
+              <button type="button" class="btn btn-danger btn-sm mt-3" data-bs-dismiss="modal" aria-label="Close">cancelar</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+{% endblock %}

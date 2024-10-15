@@ -1,0 +1,133 @@
+{% extends "base/base.html" %}
+{% block title %} Categorias {% endblock %}
+{% block contenido %}
+
+
+
+        <!-- contenido -->
+            <div class="card p-3" style="border-radius: 10px;">
+              <p class="card-title">Administración de Categorias</p>
+
+                <form action="{% url 'ventas:agregar_categoria' %}" method="POST" class="formularioRegistrarProducto mb-4 ">
+                  {% csrf_token %}
+                    <div class="row">
+                      <div class="col-md-4 me-2">
+                          <div class="form-group">
+                              <label for="descripcionProducto">Descripcion:</label>
+                              <input type="text" class="form-control  form-control-sm " id="descripcionProducto" name="descripcionProducto" placeholder="nombre de categoria" required >
+                          </div>
+
+                      </div>
+
+                        <div class="col-md-6 me-2">
+                 {% if messages %}
+
+                     {% for message in messages %}
+
+                         {% if 'success' in message.tags %}
+                            <div  class=" alert alert-success d-flex align-items-center" role="alert">
+                                 <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                                    <div>
+                                                {{message}}
+                                    </div>
+                            </div>
+                            {% elif 'error' in message.tags %}
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                    <div>
+                                                {{message}}
+                                    </div>
+                            </div>
+                         {% endif %}
+
+                     {% endfor %}
+
+                 {% endif %}
+                         </div>
+                  </div>
+
+                  <button type="submit" class="btn btn-success btn-sm me-2">registrar</button>
+                  <button type="reset" class="btn btn-danger btn-sm">cancelar</button>    
+              </form>
+  
+        <!--Tabla para editar o eliminar una categoria-->
+        
+        <div class="col-md-4 mt-4">
+          <div class="form-group">
+            <i class="icon-magnifier"></i>
+              <label for="buscarProducto">Buscar:</label>
+              <input type="text" class="form-control  form-control-sm " id="buscarProducto" name="buscarProducto" placeholder="nombre de categoria" required oninput="filtrarTablaCategorias()" >
+          </div>
+        </div>
+        <div class="col-md-6">    
+        <div class="table-responsive mt-1 mb-4" style="max-height: 400px; overflow-y: auto;">
+          <table class="table table-hover mb-4" id="tablaContenido" >
+            <thead>
+              <tr>
+                <th>Codigo</th>
+                <th>Descripcion</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for categoria in categorias %}
+              <tr>
+                <td>{{categoria.id}}</td>
+                <td>{{categoria.nombre}}</td>
+                <td><button type="button" class="btn btn-warning btn-sm me-2" onclick="modalEditarCategoria('{{ categoria.id }}', '{{ categoria.nombre }}')">editar</button>   <button class="btn btn-danger btn-sm" onclick="modalEliminarCategoria('{{ categoria.id }}')">eliminar</button> </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        </div>
+          </div>
+
+            <!-- Modal de Bootstrap para editar una categoria -->
+<div class="modal fade" id="modalEditarCategoria" tabindex="-1" aria-labelledby="modalEditarCategoriaLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEditarCategoriaLabel">Editar Categoría</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="background-color: #1C1B29">
+        <form id="formEditarCategoria" method="POST" action="{% url 'ventas:editar_categoria' %}">
+          {% csrf_token %}
+          <input type="hidden" id="categoriaId" name="categoria_id"> <!-- Campo oculto para el ID -->
+
+          <div class="mb-3">
+            <label for="categoriaNombre" class="form-label form-control-sm " style="color: #32CD32">Nombre de la Categoría</label>
+            <input type="text" class="form-control  form-control-sm  " id="categoriaNombre" name="categoria_nombre" style="background-color:white">
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-sm">Guardar cambios</button>
+          <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal" aria-label="Close">cancelar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modal para eliminar una categoria-->
+<div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminar" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="modal">Eliminar</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center" style="background-color: #1C1B29">
+              <label for="confirmarEliminar" class="form-label form-control-sm" style="color: #32CD32">¿Está seguro?</label><br>
+              <a id="confirmarEliminar" class="btn btn-danger btn-sm mt-3 me-2" href="#">Eliminar</a>
+              <button type="button" class="btn btn-danger btn-sm mt-3" data-bs-dismiss="modal" aria-label="Close">cancelar</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+        {% endblock %}
+
+
+
+

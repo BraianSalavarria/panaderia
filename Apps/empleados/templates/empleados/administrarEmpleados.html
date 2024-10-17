@@ -1,0 +1,419 @@
+{% extends "base/base.html" %}
+{% block title %} Administracion de Empleados {% endblock  %}
+
+{% block contenido %}
+
+
+
+<div class="card p-3" style="border-radius: 10px;">
+              <p class="card-title">Administración de Empleados</p>
+
+                <form class="formularioRegistrarProducto mb-4" action="{% url 'empleados:agregar_empleado' %}" method="POST">
+                    {% csrf_token %}
+                  <div class="row">
+                      <div class="col-md-4 me-2">
+                          <div class="form-group">
+                              <label for="nombreEmpleado">Nombre:</label>
+                              {{form.nombre}}
+                          </div>
+                      </div>
+
+                      <div class="col-md-4 me-2">
+                        <div class="form-group">
+                            <label for="apellidoEmpleado">Apellido:</label>
+                            {{form.apellido}}
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-group">
+                          <label for="fecha-nacimiento">Fecha de nacimiento:</label>
+                          {{form.fecha_nacimiento}}
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="form-group">
+                      <div class="col-md-3">
+                          <label for="cuitEmpleado">CUIT:</label>
+                           {{form.cuil}}
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <div class="col-md-2">
+                          <label for="telefonoEmpledo">Telefonos:</label>
+
+                            <div class="mb-4">
+                              {{form.telefono_celular}}
+                            </div>
+                          <div class="mb-4">
+                                {{form.telefono_fijo}}
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="row">
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="calle">Calle:</label>
+                                    {{form.calle}}
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="numero-calle">Numero de calle:</label>
+                                    {{form.nro_calle}}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                              <label for="localidad">Localidad:</label>
+                                {{form.localidad}}
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                              <label for="departamento">Departamento:</label>
+                                {{form.dpto}}
+                          </div>
+                        </div>
+                  </div>
+                  <div class="col-md-3">
+                    <hr>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="fecha-ingreso">Fecha de ingreso en la Panaderia:</label>
+                            {{form.fecha_ingreso}}
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn btn-success btn-sm me-2">registrar</button>
+                  <button type="reset" class="btn btn-danger btn-sm">cancelar</button>
+                </form>
+
+         <div class="col-md-6 me-2">
+                 {% if messages %}
+
+                     {% for message in messages %}
+
+                         {% if 'success' in message.tags %}
+                            <div  class=" alert alert-success d-flex align-items-center" role="alert">
+                                 <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                                    <div>
+                                                {{message}}
+                                    </div>
+                            </div>
+                            {% elif 'error' in message.tags %}
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                    <div>
+                                                {{message}}
+                                    </div>
+                            </div>
+                         {% endif %}
+
+                     {% endfor %}
+
+                 {% endif %}
+
+                    {% if errors %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for field, error_list in errors.items %}
+                {% for error in error_list %}
+                    <li>{{ field }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+        {% endif %}
+
+
+         </div>
+
+
+        <!--Tabla para editar o eliminar un empleado-->
+
+        <div class="col-md-4 mt-4">
+          <div class="form-group">
+            <i class="icon-magnifier"></i>
+              <label for="buscar">Buscar:</label>
+              <input type="text" class="form-control  form-control-sm " id="buscar" name="buscar" placeholder="nombre de cliente" required >
+          </div>
+        </div>
+              <div class="table-responsive mt-1 mb-4">
+                <table class="table table-hover mb-4" id="tablaContenido">
+                  <thead>
+                    <tr>
+                      <th>Cuil</th>
+                      <th>Nombre</th>
+                      <th>Apellido</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                        {% for empleado in empleados %}
+                    <tr>
+                      <td>{{empleado.cuil}}</td>
+                      <td>{{empleado.nombre}}</td>
+                      <td>{{empleado.apellido}}</td>
+                      <td><button type="button" class="btn btn-primary btn-sm me-2" onclick="modalInfoEmpleado('{{empleado.nombre}}','{{empleado.apellido}}','{{empleado.cuil}}','{{empleado.fecha_nacimiento}}','{{empleado.telefono_celular}}','{{empleado.telefono_fijo}}','{{empleado.calle}}','{{empleado.nro_calle}}','{{empleado.localidad}}','{{empleado.dpto}}','{{empleado.fecha_ingreso}}' )">info</button> <button type="button" class="btn btn-warning btn-sm me-2" onclick="modalEditarEmpleado( {{empleado.id}},'{{empleado.nombre}}','{{empleado.apellido}}','{{empleado.cuil}}','{{empleado.fecha_nacimiento}}','{{empleado.telefono_celular}}','{{empleado.telefono_fijo}}','{{empleado.calle}}','{{empleado.nro_calle}}','{{empleado.localidad}}','{{empleado.dpto}}','{{empleado.fecha_ingreso}}' )" >editar</button> <button type="button" class="btn btn-danger btn-sm" onclick="modalEliminarEmpleado({{empleado.id}})">eliminar</button></td>
+                    </tr>
+                        {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+  </div>
+
+                           <!-- Modal para editar un Empleado -->
+          <div class="modal fade" id="modalEditarEmpleado" tabindex="-1" aria-labelledby="modalEditarEmpleadoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditarEmpleadoLabel">Editar Empleado</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="background-color: #1C1B29">
+
+                        <form id="formEditarEmpleado"  action="{% url 'empleados:editar_empleado' %}" method="POST">
+                            {% csrf_token %}
+                            <!-- Campo oculto para el ID -->
+                            <input type="hidden" id="id_empleado" name="id_empleado">
+                            
+                            <div class="row">
+
+                              <div class="col-md-5 ">
+                                  <div class="form-group">
+                                      <label for="nombreEmpleado" style="color: #32CD32">Nombre:</label>
+                                      <input type="text" class="form-control  form-control-sm text-white " id="nombreEmpleado" name="nombreEmpleado" placeholder="nombre de empleado" required >
+                                  </div>
+                              </div>
+        
+                              <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="apellidoEmpleado" style="color: #32CD32">Apellido:</label>
+                                    <input type="text" class="form-control  form-control-sm text-white" id="apellidoEmpleado" name="apellidoEmpleado" placeholder="apellido de empleado" required >
+                                </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="fechaNacimiento" style="color: #32CD32">Fecha de nacimiento:</label>
+                                <input type="date" class="form-control form-control-sm text-white" id="fechaNacimiento" name="fechaNacimiento">
+                            </div>
+                          </div> 
+
+                          <div class="form-group">
+                              <div class="col-md-5">
+                                  <label for="cuitEmpleado" style="color: #32CD32">CUIT:</label>
+                                  <input type="number" class="form-control form-control-sm text-white" id="cuitEmpleado" name="cuitEmpleado" pattern="^\d{1,14}$" placeholder="cuit de empleado">
+                              </div>
+                          </div>
+                          <div class="row">
+                            <p style="color: #32CD32">Telefonos:</p>
+                                      <div class="col-md-5">
+                                        <div class="form-group">   
+                                          <input type="number" class="form-control form-control-sm mb-4 text-white" id="telefonoCelularEmpleado" name="telefonoCelularEmpleado" pattern="^\d{1,14}$" placeholder="telefono celular">
+                                        </div>
+                                      </div>
+
+                                      <div class="col-md-5">
+                                        <div class="form-group">  
+                                          <input type="number" class="form-control form-control-sm mb-4 text-white" id="telefonoFijoEmpleado" name="telefonoFijoEmpleado" pattern="^\d{1,14}$" placeholder="telefono fijo" >
+                                        </div>
+                                      </div>
+                          </div>
+                          
+                          <div class="row">
+        
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="calle" style="color: #32CD32">Calle:</label>
+                                        <input type="text" class="form-control form-control-sm text-white" id="calle" name="calle" placeholder="nombre de calle">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="numeroCalle" style="color: #32CD32">Numero de calle:</label>
+                                        <input type="number" class="form-control form-control-sm text-white" id="numeroCalle" name="numeroCalle" pattern="^\d{1,8}$" placeholder="numero de la calle">
+                                    </div>
+                                </div>
+                                
+                          </div>
+
+                          <div class="row">
+                            <div class="col-md-5">
+                              <div class="form-group">
+                                  <label for="localidad" style="color: #32CD32">Localidad:</label>
+                                  <input type="text" class="form-control form-control-sm text-white" id="localidad" name="localidad" placeholder="nombre de la localidad">
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                  <label for="departamento" style="color: #32CD32">Departamento:</label>
+                                  <input type="text" class="form-control form-control-sm text-white" id="departamento" name="departamento" placeholder="nombre del departamento">
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="fechaIngreso" style="color: #32CD32">Fecha de ingreso en la Panaderia:</label>
+                                <input type="date" class="form-control form-control-sm text-white" id="fechaIngreso" name="fechaIngreso">
+                            </div>
+                          </div>
+        
+
+                          <button type="submit" class="btn btn-success btn-sm me-2">registrar</button>
+                          <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
+                               
+                        </form>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+
+                <!-- modal para eliminar un Empleado-->
+<div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminar" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="modal">Eliminar</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center" style="background-color: #1C1B29">
+              <label for="confirmarEliminar" class="form-label form-control-sm" style="color: #32CD32">¿Está seguro?</label><br>
+              <a id="confirmarEliminar" class="btn btn-danger btn-sm mt-3 me-2" href="#">Eliminar</a>
+              <button type="button" class="btn btn-danger btn-sm mt-3" data-bs-dismiss="modal" aria-label="Close">cancelar</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+ <!-- Modal para mostrar info de un Empleado -->
+          <div class="modal fade" id="modalInfoEmpleado" tabindex="-1" aria-labelledby="modalEditarEmpleadoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalInfoEmpleadoLabel">Informacion Empleado</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="background-color: #1C1B29">
+
+
+
+                            <div class="row">
+
+                              <div class="col-md-5 ">
+                                  <div class="form-group">
+                                      <label for="nombreEmpleadoI" style="color: #32CD32">Nombre:</label>
+                                      <input type="text" class="form-control  form-control-sm text-white " id="nombreEmpleadoI" name="nombreEmpleadoI" placeholder="nombre de empleado" required >
+                                  </div>
+                              </div>
+
+                              <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="apellidoEmpleadoI" style="color: #32CD32">Apellido:</label>
+                                    <input type="text" class="form-control  form-control-sm text-white" id="apellidoEmpleadoI" name="apellidoEmpleadoI" placeholder="apellido de empleado" required >
+                                </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="fechaNacimientoI" style="color: #32CD32">Fecha de nacimiento:</label>
+                                <input type="date" class="form-control form-control-sm text-white" id="fechaNacimientoI" name="fechaNacimientoI">
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                              <div class="col-md-5">
+                                  <label for="cuitEmpleadoI" style="color: #32CD32">CUIT:</label>
+                                  <input type="number" class="form-control form-control-sm text-white" id="cuitEmpleadoI" name="cuitEmpleadoI" pattern="^\d{1,14}$" placeholder="cuit de empleado">
+                              </div>
+                          </div>
+                          <div class="row">
+                            <p style="color: #32CD32">Telefonos:</p>
+                                      <div class="col-md-5">
+                                        <div class="form-group">
+                                          <input type="number" class="form-control form-control-sm mb-4 text-white" id="telefonoCelularEmpleadoI" name="telefonoCelularEmpleadoI" pattern="^\d{1,14}$" placeholder="telefono celular">
+                                        </div>
+                                      </div>
+
+                                      <div class="col-md-5">
+                                        <div class="form-group">
+                                          <input type="number" class="form-control form-control-sm mb-4 text-white" id="telefonoFijoEmpleadoI" name="telefonoFijoEmpleadoI" pattern="^\d{1,14}$" placeholder="telefono fijo" >
+                                        </div>
+                                      </div>
+                          </div>
+
+                          <div class="row">
+
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="calleI" style="color: #32CD32">Calle:</label>
+                                        <input type="text" class="form-control form-control-sm text-white" id="calleI" name="calleI" placeholder="nombre de calle">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="numeroCalleI" style="color: #32CD32">Numero de calle:</label>
+                                        <input type="number" class="form-control form-control-sm text-white" id="numeroCalleI" name="numeroCalleI" pattern="^\d{1,8}$" placeholder="numero de la calle">
+                                    </div>
+                                </div>
+
+                          </div>
+
+                          <div class="row">
+                            <div class="col-md-5">
+                              <div class="form-group">
+                                  <label for="localidadI" style="color: #32CD32">Localidad:</label>
+                                  <input type="text" class="form-control form-control-sm text-white" id="localidadI" name="localidadI" placeholder="nombre de la localidad">
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                  <label for="departamentoI" style="color: #32CD32">Departamento:</label>
+                                  <input type="text" class="form-control form-control-sm text-white" id="departamentoI" name="departamentoI" placeholder="nombre del departamento">
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="fechaIngresoI" style="color: #32CD32">Fecha de ingreso en la Panaderia:</label>
+                                <input type="date" class="form-control form-control-sm text-white" id="fechaIngresoI" name="fechaIngresoI">
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col d-flex justify-content-center">
+                                <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+{% endblock %}
+
+
+
+
+
+
+
+

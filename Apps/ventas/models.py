@@ -58,7 +58,7 @@ class Venta(models.Model):
 
 class Mayorista(models.Model):
 
-    cuil = models.CharField(max_length=10,unique=True)
+    cuil = models.CharField(max_length=12,unique=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=150)
     rubro = models.CharField(max_length=200)

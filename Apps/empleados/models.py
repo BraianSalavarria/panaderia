@@ -1,7 +1,7 @@
 from django.db import models
 
 class Empleado(models.Model):
-    cuit = models.CharField(max_length=11, unique=True)
+    cuil = models.CharField(max_length=12, unique=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=150)
     telefono_fijo = models.CharField(max_length=20,blank=True,null=True)

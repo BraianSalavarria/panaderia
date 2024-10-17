@@ -1,0 +1,229 @@
+{% extends "base/base.html" %}
+{% block title %} Administrar Mayoristas {% endblock %}
+
+
+{% block contenido %}
+  <!-- inicio-->
+            <div class="card p-3" style="border-radius: 10px;">
+              <p class="card-title">Administración de Clientes Mayoristas</p>
+
+                <form class="formularioRegistrarMayorista mb-4" action="{% url 'ventas:agregar_mayorista' %}" method="POST">
+                     {% csrf_token %}
+                  <div class="row">
+                      <div class="col-md-4 me-2">
+                          <div class="form-group">
+                              <label for="nombreMayorista">Nombre:</label>
+                              <input type="text" class="form-control  form-control-sm " id="nombreMayorista" name="nombreMayorista" placeholder="nombre de cliente" required >
+                          </div>
+                      </div>
+
+                      <div class="col-md-4 me-2">
+                        <div class="form-group">
+                            <label for="apellidoMayorista">Apellido:</label>
+                            <input type="text" class="form-control  form-control-sm " id="apellidoMayorista" name="apellidoMayorista" placeholder="apellido de cliente" required >
+                        </div>
+                    </div>
+
+                  </div>
+                  <div class="form-group">
+                      <div class="col-md-3">
+                          <label for="cuilMayorista">Cuil:</label>
+                          <input type="number" class="form-control form-control-sm" id="cuilMayorista" name="cuilMayorista" pattern="^\d{1,9}$" placeholder="dni de cliente">
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <div class="col-md-4">
+                          <label for="informacionMayorista">Información Adicional sobre el cliente:</label>
+                          <textarea cols="25" rows="10" id="informacionMayorista" name="informacionMayorista" class="form-control" ></textarea>
+                      </div>
+                  </div>
+
+                    <div class="col-md-6 me-2">
+                 {% if messages %}
+
+                     {% for message in messages %}
+
+                         {% if 'success' in message.tags %}
+                            <div  class=" alert alert-success d-flex align-items-center" role="alert">
+                                 <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                                    <div>
+                                                {{message}}
+                                    </div>
+                            </div>
+                            {% elif 'error' in message.tags %}
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                    <div>
+                                                {{message}}
+                                    </div>
+                            </div>
+                         {% endif %}
+
+                     {% endfor %}
+
+                 {% endif %}
+                         </div>
+
+                  <button type="submit" class="btn btn-success btn-sm me-2">registrar</button>
+                  <button type="reset" class="btn btn-danger btn-sm">cancelar</button>
+                </form>
+
+
+
+        <!--Tabla para editar o eliminar un Mayorista-->
+
+        <div class="col-md-4 mt-4">
+          <div class="form-group">
+            <i class="icon-magnifier"></i>
+              <label for="buscarMayorista">Buscar:</label>
+              <input type="text" class="form-control  form-control-sm " id="buscarMayorista" name="buscarMayorista" placeholder="nombre de cliente" required >
+          </div>
+        </div>
+              <div class="table-responsive mt-1 mb-4">
+                <table class="table table-hover mb-4" id="tablaContenido">
+                  <thead>
+                    <tr>
+                      <th>Cuil</th>
+                      <th>Nombre</th>
+                      <th>Apellido</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                        {% for mayorista in mayoristas %}
+                    <tr>
+                      <td>{{mayorista.cuil}}</td>
+                      <td>{{mayorista.nombre}}</td>
+                      <td>{{mayorista.apellido}}</td>
+                      <td> <button type="button" class="btn btn-primary btn-sm me-2" onclick="modalInfoMayorista( '{{mayorista.rubro}}' )">Info</button> <button type="button" class="btn btn-warning btn-sm me-2" onclick="modalEditarMayorista( {{mayorista.id}},{{mayorista.cuil}},'{{mayorista.nombre}}','{{mayorista.apellido}}','{{mayorista.rubro}}' )">editar</button> <button type="button" class="btn btn-danger btn-sm me-2" onclick="modalEliminarMayorista({{mayorista.id}})">eliminar</button> </td>
+                    </tr>
+                        {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+
+           <!-- Modal para editar un Mayorista -->
+<div class="modal fade" id="modalEditarMayorista" tabindex="-1" aria-labelledby="modalEditarCategoriaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarMayoristaLabel">Editar Mayorista</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="background-color: #1C1B29">
+
+                <form id="formEditarMayorista"  action="{% url 'ventas:editar_mayorista' %}" method="POST">
+                    {% csrf_token %}
+                    <!-- Campo oculto para el ID -->
+                <input type="hidden" id="id_mayorista" name="id_mayorista">
+                    <div class="container">
+
+                        <div class="row justify-content-center mb-2">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="nombreMayoristaM" style="color: #32CD32">Nombre:</label>
+                                    <input type="text" class="form-control form-control-sm text-white" id="nombreMayoristaM" name="nombreMayoristaM" placeholder="nombre de cliente" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center mb-2">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="apellidoMayoristaM" style="color: #32CD32">Apellido:</label>
+                                    <input type="text" class="form-control form-control-sm text-white" id="apellidoMayoristaM" name="apellidoMayoristaM" placeholder="apellido de cliente" required>
+                                </div>
+                            </div>
+                        </div>
+
+
+                          <div class="row justify-content-center mb-2">
+                              <div class="col-md-8 ">
+                                  <label for="cuilMayoristaM" style="color: #32CD32">Cuil:</label>
+                                  <input type="number" class="form-control form-control-sm text-white" id="cuilMayoristaM" name="cuilMayoristaM" pattern="^\d{1,9}$" placeholder="dni de cliente">
+                              </div>
+                          </div>
+
+                        <div class="row justify-content-center mb-3">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="informacionMayoristaM" style="color: #32CD32">Información Adicional sobre el cliente:</label>
+                                    <textarea cols="25" rows="5" id="informacionMayoristaM" name="informacionMayoristaM" class="form-control text-white"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center">
+                            <div class="col-md-8 d-flex justify-content-between">
+                                <button type="submit" class="btn btn-success btn-sm">Guardar cambios</button>
+                                <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+                        <!-- modal para mostrar informacion -->
+<div class="modal fade" id="modalInfoMayorista" tabindex="-1" aria-labelledby="modalEditarCategoriaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalInfoMayoristaLabel">Editar Mayorista</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="background-color: #1C1B29">
+
+                    <div class="container">
+
+                        <div class="row justify-content-center mb-3">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="informacionMayoristaM" style="color: #32CD32">Información Adicional sobre el cliente:</label>
+                                    <textarea cols="25" rows="5" id="infoMayoristaM" name="infoMayoristaM" class="form-control text-white"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col d-flex justify-content-center">
+                                <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
+                            </div>
+                        </div>
+
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+                <!-- modal para eliminar un mayorista-->
+<div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminar" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="modal">Eliminar</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center" style="background-color: #1C1B29">
+              <label for="confirmarEliminar" class="form-label form-control-sm" style="color: #32CD32">¿Está seguro?</label><br>
+              <a id="confirmarEliminar" class="btn btn-danger btn-sm mt-3 me-2" href="#">Eliminar</a>
+              <button type="button" class="btn btn-danger btn-sm mt-3" data-bs-dismiss="modal" aria-label="Close">cancelar</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+
+
+            </div>
+
+
+        <!-- fin -->
+{% endblock %}

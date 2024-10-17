@@ -2,7 +2,9 @@ from decimal import Decimal
 from django.db import IntegrityError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from Apps.ventas.models import Categoria, Producto
+from django.utils.datastructures import MultiValueDictKeyError
+
+from Apps.ventas.models import Categoria, Producto, Mayorista
 
 
 def lista_de_categorias(request):
@@ -71,6 +73,8 @@ def agregar_producto(request):
           messages.error(request,'Error: valor del precio invalido')
       except IntegrityError:
           messages.error(request,f'El Producto "{descripcion}" ya se encuentra registrado')
+      except MultiValueDictKeyError:
+          messages.error(request,'Error: Debe Seleccionar o Registrar Previamente una Categoria de Productos')
 
     return redirect(to='ventas:lista_productos')
 
@@ -102,3 +106,57 @@ def eliminar_producto(request,id):
     producto.delete()
     messages.success(request,f'El Producto "{producto.descripcion}" se ha Eliminado Correctamente')
     return redirect(to='ventas:lista_productos')
+
+
+def lista_mayoristas(request):
+
+    mayoristas = Mayorista.objects.all()
+    return render(request,'ventas/administrarMayoristas.html',{'mayoristas':mayoristas})
+
+
+def agregar_mayorista(request):
+
+    if request.method == 'POST':
+        try:
+                cuil = request.POST['cuilMayorista']
+                nombre = request.POST['nombreMayorista']
+                apellido = request.POST['apellidoMayorista']
+                informacion = request.POST['informacionMayorista']
+                mayorista = Mayorista(cuil=cuil, nombre=nombre,apellido=apellido, rubro=informacion)
+                mayorista.save()
+                messages.success(request, f'El Cliente "{nombre}" se ha Registrado Correctamente')
+
+        except IntegrityError:
+            messages.error(request,f'El Cliente "{nombre}" ya se Encuentra Registrado')
+
+    return redirect(to='ventas:lista_mayoristas')
+
+def editar_mayorista(request):
+
+    if request.method == 'POST':
+
+        mayorista = get_object_or_404(Mayorista,id = request.POST['id_mayorista'])
+
+        nombre =  request.POST['nombreMayoristaM']
+        apellido =  request.POST['apellidoMayoristaM']
+        informacion =  request.POST['informacionMayoristaM']
+        cuil = request.POST['cuilMayoristaM']
+
+        mayorista.nombre = nombre
+        mayorista.apellido = apellido
+        mayorista.rubro = informacion
+        mayorista.cuil = cuil
+
+        mayorista.save()
+        messages.success(request,f'El Cliente "{nombre}" se ha Actualizado Correctamente ')
+
+    return redirect(to='ventas:lista_mayoristas')
+
+
+def eliminar_mayorista (request, id):
+    mayorista = get_object_or_404(Mayorista,id = id)
+    mayorista.delete()
+    messages.success(request,f'El Cliente "{mayorista.nombre}" se ha Eliminado Correctamente')
+    return redirect(to='ventas:lista_mayoristas')
+
+

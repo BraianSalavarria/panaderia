@@ -1,8 +1,4 @@
-from dataclasses import fields
-
 from django import forms
-from django.conf.locale.az.formats import DATETIME_INPUT_FORMATS
-
 from Apps.empleados.models import Empleado
 
 class EmpleadoForm(forms.ModelForm):

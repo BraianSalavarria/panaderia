@@ -1,6 +1,3 @@
-from multiprocessing.util import close_all_fds_except
-from optparse import check_builtin
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from Apps.empleados.forms import EmpleadoForm

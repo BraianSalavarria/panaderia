@@ -203,3 +203,26 @@ function modalEditarProducto(id_producto,descripcion,cantidad,id_categoria,preci
             const modal = new bootstrap.Modal(document.getElementById('modalInfoEmpleado'));
             modal.show();
     }
+
+
+    function modalEliminarProveedor(proveedorId) {
+        // Configura la URL del botón de confirmación en el modal
+        const urlEliminar = `eliminar-proveedor/${proveedorId}`
+        document.getElementById('confirmarEliminar').setAttribute('href', urlEliminar);
+        console.log('hola')
+        // Muestra el modal de eliminación
+        const modal = new bootstrap.Modal(document.getElementById('modalEliminar'));
+        modal.show();
+    }
+
+    function modalEditarProveedor(id_proveedor, nombre, apellido,empresa) {
+        // Asignar los valores al modal
+            document.getElementById('id_proveedor').value = id_proveedor;
+            document.getElementById('nombreProveedorM').value = nombre;
+            document.getElementById('apellidoProveedorM').value = apellido;
+            document.getElementById('empresaM').value  = empresa;
+
+        // Mostrar el modal
+        var modal = new bootstrap.Modal(document.getElementById('modalEditarProveedor'));
+        modal.show();
+    }

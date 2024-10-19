@@ -1,0 +1,180 @@
+{% extends "base/base.html" %}
+{%block title%} Administracion de Proveedores {% endblock %}
+
+
+{% block contenido %}
+
+<div class="card p-3" style="border-radius: 10px;">
+              <p class="card-title">Administración de Proveedores</p>
+                <form class="formularioRegistrarProducto mb-4 " action="{% url 'inventario:agregar_proveedor' %}" method="POST">
+                    {%csrf_token%}
+                  <div class="row">
+
+                      <div class="col-md-4 me-2">
+                          <div class="form-group">
+                              <label>nombre:</label>
+                              {{ form.nombre }}
+                          </div>
+                      </div>
+                      <div class="col-md-4 me-2">
+                          <div class="form-group">
+                            <label>apellido:</label>
+                              {{ form.apellido }}
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="col-md-4">
+
+                    <div class="form-group">
+                        <label>Nombre de Empresa o Fabrica:</label>
+                        {{ form.empresa }}
+                    </div>
+                </div>
+
+                  <button type="submit" class="btn btn-success btn-sm me-2">registrar</button>
+                  <button type="reset" class="btn btn-danger btn-sm">cancelar</button>
+              </form>
+
+
+                 <div class="col-md-6 me-2">
+                 {% if messages %}
+
+                     {% for message in messages %}
+
+                         {% if 'success' in message.tags %}
+                            <div  class=" alert alert-success d-flex align-items-center" role="alert">
+                                 <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                                    <div>
+                                                {{message}}
+                                    </div>
+                            </div>
+                            {% elif 'error' in message.tags %}
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                    <div>
+                                                {{message}}
+                                    </div>
+                            </div>
+                         {% endif %}
+
+                     {% endfor %}
+
+                 {% endif %}
+                </div>
+
+
+
+        <!--Tabla para editar o eliminar un producto-->
+
+        <div class="col-md-4 mt-4">
+          <div class="form-group">
+            <i class="icon-magnifier"></i>
+              <label for="buscarProducto">Buscar:</label>
+              <input type="text" class="form-control form-control-sm " id="buscarProducto" name="buscarProducto" placeholder="nombre de producto" required >
+          </div>
+        </div>
+              <div class="table-responsive mt-1 mb-4">
+                <table class="table table-hover mb-4" id="tablaContenido">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Apellido</th>
+                      <th>Empresa/Fabrica</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                        {% for proveedor in proveedores %}
+                    <tr>
+                      <td>{{proveedor.nombre}}</td>
+                      <td>{{proveedor.apellido}}</td>
+                      <td>{{proveedor.empresa}}</td>
+                      <td><button type="button" class="btn btn-warning btn-sm me-2" onclick="modalEditarProveedor( {{proveedor.id}}, '{{proveedor.nombre}}', '{{proveedor.apellido}}', '{{proveedor.empresa}}' )">editar</button> <button type="button" class="btn btn-danger btn-sm" onclick="modalEliminarProveedor( {{proveedor.id}} )">eliminar</button></td>
+                    </tr>
+                        {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+            <!-- modal para eliminar un proveedor -->
+
+            <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminar" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="modal">Eliminar</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center" style="background-color: #1C1B29">
+              <label for="confirmarEliminar" class="form-label form-control-sm" style="color: #32CD32">¿Está seguro?</label><br>
+              <a id="confirmarEliminar" class="btn btn-danger btn-sm mt-3 me-2" href="#">Eliminar</a>
+              <button type="button" class="btn btn-danger btn-sm mt-3" data-bs-dismiss="modal" aria-label="Close">cancelar</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+ <!-- Modal para Editar un Proveedor-->
+<div class="modal fade" id="modalEditarProveedor" tabindex="-1" aria-labelledby="modalEditarProveedorLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEditarProveedorLabel">Editar Categoría</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="background-color: #1C1B29">
+        <form id="formEditarProveedor" action="{% url 'inventario:editar_proveedor' %}" method="POST">
+            {% csrf_token %}
+
+            <input type="hidden" id="id_proveedor" name="id_proveedor">
+             <div class="row">
+
+                      <div class="col-md-6 me-2">
+                          <div class="form-group">
+                              <label for="nombreProveedorM" style="color: #32CD32">Nombre</label>
+                              <input type="text" class="form-control  form-control-sm text-white " id="nombreProveedorM" name="nombreProveedorM" placeholder="nombre" required >
+                          </div>
+                      </div>
+
+                       <div class="form-group">
+                      <div class="col-md-3">
+                          <label for="apellidoProveedorM" style="color: #32CD32">Apellido:</label>
+                          <input type="text" class="form-control form-control-sm text-white" id="apellidoProveedorM" name="apellidoProveedorM" placeholder="apellido" required >
+                      </div>
+                  </div>
+
+                  </div>
+
+                  <div class="form-group">
+                      <div class="col-md-3">
+                          <label for="empresaM" style="color: #32CD32">Empresa/Fabrica:</label>
+                          <input type="text" class="form-control form-control-sm text-white" id="empresaM" name="empresaM" required  >
+                      </div>
+
+                  </div>
+                  <button type="submit" class="btn btn-success btn-sm me-2">guardar cambios</button>
+                  <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal" aria-label="Close">cancelar</button>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+            </div>
+
+{% endblock %}

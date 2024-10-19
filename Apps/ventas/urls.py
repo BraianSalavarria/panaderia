@@ -1,4 +1,3 @@
-from tkinter.font import names
 
 from django.urls import path
 from Apps.ventas.views import (lista_de_categorias, agregar_categoria, eliminar_categoria, editar_categoria,

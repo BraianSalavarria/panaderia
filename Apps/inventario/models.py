@@ -4,23 +4,22 @@ from Apps.empleados.models import Empleado
 
 class Proveedor(models.Model):
 
-    cuit = models.CharField(max_length=11, unique=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=150)
     empresa = models.CharField(max_length=200)
 
     def __str__(self):
-        return f'{self.nombre},{self.apellido},{self.empresa}'
+        return f'{self.nombre} - {self.apellido} - {self.empresa}'
 
 
 class Insumo (models.Model):
 
     nombre = models.CharField(max_length=100)
-    proveedor = models.ManyToManyField(Proveedor)
+    proveedores = models.ManyToManyField(Proveedor,related_name='insumos')
     cantidad = models.PositiveIntegerField()
 
     def __str__(self):
-        return f'{self.nombre},{self.proveedor},{self.cantidad}'
+        return f'{self.nombre},{self.cantidad}'
 
 
 class Pedido (models.Model):

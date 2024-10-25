@@ -138,7 +138,7 @@
               </a>
               <div class="collapse" id="auth">
                 <ul class="nav flex-column sub-menu">
-                  <li class="nav-item"> <a class="nav-link" href="./agregarVenta.html"> Registrar Venta </a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'ventas:registrar_venta' %}"> Registrar Venta </a></li>
                   <li class="nav-item"> <a class="nav-link" href="./ventasRealizadas.html"> Ventas Realizadas</a></li>
                   <li class="nav-item"> <a class="nav-link" href="./comprobantes.html"> Comprobantes</a></li>
                   <li class="nav-item"> <a class="nav-link" href="./estadisticas.html"> Estadisticas de Venta</a></li>
@@ -176,10 +176,14 @@
 
 
     <!--scripts necesarios, pagina base -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'assets/js/SelectBraianJS.js' %}"></script>
+    <script src="{% static 'assets/js/VentasBraian.js' %}"></script>
     <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
     <script src="{% static 'assets/js/misc.js' %}"></script>
     <script src="{% static 'assets/js/dashboard.js' %}"></script>
     <script src="{% static 'assets/js/braianJS.js' %}"></script>
+
   </body>
 </html>
 

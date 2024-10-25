@@ -1,5 +1,5 @@
 from django.db import models
-from Apps.empleados.models import Empleado
+
 
 
 class Categoria(models.Model):
@@ -18,6 +18,9 @@ class Producto(models.Model):
 
     def __str__(self):
         return f'{self.descripcion},{self.cantidad_disponible},{self.categoria}'
+
+    class Meta:
+        ordering =['id']
 
 
 class Venta(models.Model):
@@ -43,17 +46,29 @@ class Venta(models.Model):
         ('contado','CONTADO'),
     ]
     fecha = models.DateField(auto_now=True)
-    nro_comprobante = models.CharField(max_length=10, unique=True)
-    comprobante = models.CharField(max_length=10,choices=TIPOS_COMPROBANTE)
-    venta = models.CharField(max_length=7,choices=TIPOS_VENTA)
-    pago = models.CharField(max_length=18,choices=TIPOS_PAGO)
-    empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE, related_name='ventas_realizadas')
-    producto = models.ManyToManyField(Producto)
+    nro_comprobante = models.CharField(max_length=15 ,unique=True)
+    #multiple opciones
+    comprobante_tipo = models.CharField(max_length=10,choices=TIPOS_COMPROBANTE)
+    venta_tipo = models.CharField(max_length=7,choices=TIPOS_VENTA)
+    pago_tipo = models.CharField(max_length=18,choices=TIPOS_PAGO)
+    #--------------------------------------------------------------------------------------------------
+    #empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE, related_name='ventas_realizadas')
     observaciones = models.TextField(blank=True,null=True)
     total = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f'{self.fecha}{self.nro_comprobante},{self.empleado}'
+        return f'{self.fecha} - {self.nro_comprobante} '
+
+
+class ItemVenta(models.Model):
+    venta = models.ForeignKey(Venta,on_delete=models.CASCADE,related_name='items')
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f'{self.producto} - cantidad:{self.cantidad}'
+    class Meta:
+        ordering = ["id"]
 
 
 class Mayorista(models.Model):

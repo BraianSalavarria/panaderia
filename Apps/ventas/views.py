@@ -1,9 +1,12 @@
 from decimal import Decimal
+
 from django.db import IntegrityError
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils.datastructures import MultiValueDictKeyError
 
+from Apps.ventas.forms import ItemsVentaFormSet, VentaForm
 from Apps.ventas.models import Categoria, Producto, Mayorista
 
 
@@ -158,5 +161,90 @@ def eliminar_mayorista (request, id):
     mayorista.delete()
     messages.success(request,f'El Cliente "{mayorista.nombre}" se ha Eliminado Correctamente')
     return redirect(to='ventas:lista_mayoristas')
+
+
+def registrar_venta(request):
+    categorias = Categoria.objects.all()
+    venta_form = VentaForm()
+    formset = ItemsVentaFormSet()
+
+    return render(request,'ventas/administrarVentas.html',{'categorias':categorias,'form':venta_form,'formset':formset})
+
+
+def obtener_productos(request):
+    categoria_id = request.GET.get('categoria')
+    productos = Producto.objects.filter(categoria_id=categoria_id)  # Filtrar los productos por categoría
+
+    # Crear una lista de productos para enviar en la respuesta
+    productos_data = [{'id': producto.id, 'nombre': producto.descripcion} for producto in productos]
+    return JsonResponse({'productos': productos_data})
+
+def obtener_producto(request, producto_id):
+    producto = Producto.objects.get(id = producto_id)
+
+    data = {
+        'id':producto.id,
+        'descripcion': producto.descripcion,
+        'precio': producto.precio,
+    }
+
+    return JsonResponse({'producto':data}, status = 200)
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
+
+def crear_item_venta(request):
+    if request.method == 'POST':
+        form = VentaForm(request.POST)
+        formset = ItemsVentaFormSet(request.POST)
+
+        if form.is_valid() and formset.is_valid():
+            venta = form.save(commit=False)
+            total = 0
+            has_stock_error = False  # Variable para verificar si hay errores de stock
+
+            for item_form in formset:
+                producto = item_form.cleaned_data.get('producto')
+                cantidad = item_form.cleaned_data.get('cantidad')
+
+                if producto and cantidad:
+                    # Comprobamos si hay suficiente stock
+                    if producto.cantidad_disponible < cantidad:
+                        item_form.add_error('cantidad',f'Solo hay {producto.cantidad_disponible} unidades disponibles de {producto.descripcion}.')
+                        has_stock_error = True
+                    else:
+                        total += producto.precio * cantidad
+
+            if has_stock_error:
+                messages.error(request, 'Error: No se puede completar la venta debido a falta de stock.')
+            else:
+                # Guardamos los cambios si no hay errores de stock
+                venta.total = total
+                venta.save()
+                formset.instance = venta  # Asignamos la instancia de venta al formset
+                formset.save()
+
+                # Actualizamos el stock de cada producto
+                for item_form in formset:
+                    producto = item_form.cleaned_data.get('producto')
+                    cantidad = item_form.cleaned_data.get('cantidad')
+                    if producto and cantidad:
+                        producto.cantidad_disponible -= cantidad
+                        producto.save()
+
+                messages.success(request, 'Venta Registrada con Éxito')
+                return redirect('ventas:registrar_venta')
+        else:
+            messages.error(request, 'Error en la venta')
+
+    else:
+        form = VentaForm()
+        formset = ItemsVentaFormSet()
+
+    return render(request, 'ventas/administrarVentas.html', {'form': form, 'formset': formset})
+
+
 
 

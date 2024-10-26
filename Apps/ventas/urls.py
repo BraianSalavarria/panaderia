@@ -2,8 +2,8 @@
 from django.urls import path
 from Apps.ventas.views import (lista_de_categorias, agregar_categoria, eliminar_categoria, editar_categoria,
                                lista_productos, agregar_producto, editar_producto, eliminar_producto, agregar_mayorista,
-                               lista_mayoristas, editar_mayorista, eliminar_mayorista, obtener_productos,
-                               obtener_producto, registrar_venta, crear_item_venta)
+                               lista_mayoristas, editar_mayorista, eliminar_mayorista,registrar_venta, crear_item_venta,
+                               obtener_precio_producto)
 
 app_name = 'ventas'
 
@@ -22,8 +22,7 @@ urlpatterns = [
     path('editar-mayorista',editar_mayorista,name='editar_mayorista'),
     path('eliminar-mayorista/<int:id>',eliminar_mayorista,name="eliminar_mayorista"),
     path('registrar-venta',registrar_venta,name='registrar_venta'),
-    path('obtener-productos',obtener_productos,name='obtener_productos'),
-    path('obtener-producto/<int:producto_id>',obtener_producto,name='obtener_producto'),
-    path('crear-item-venta',crear_item_venta,name='crear_item_venta')
+    path('crear-item-venta',crear_item_venta,name='crear_item_venta'),
+    path('obtener-precio-producto/', obtener_precio_producto, name='obtener_precio_producto'),
     
 ]

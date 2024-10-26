@@ -1,5 +1,6 @@
 from decimal import Decimal
-
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -171,29 +172,6 @@ def registrar_venta(request):
     return render(request,'ventas/administrarVentas.html',{'categorias':categorias,'form':venta_form,'formset':formset})
 
 
-def obtener_productos(request):
-    categoria_id = request.GET.get('categoria')
-    productos = Producto.objects.filter(categoria_id=categoria_id)  # Filtrar los productos por categoría
-
-    # Crear una lista de productos para enviar en la respuesta
-    productos_data = [{'id': producto.id, 'nombre': producto.descripcion} for producto in productos]
-    return JsonResponse({'productos': productos_data})
-
-def obtener_producto(request, producto_id):
-    producto = Producto.objects.get(id = producto_id)
-
-    data = {
-        'id':producto.id,
-        'descripcion': producto.descripcion,
-        'precio': producto.precio,
-    }
-
-    return JsonResponse({'producto':data}, status = 200)
-
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-
 
 def crear_item_venta(request):
     if request.method == 'POST':
@@ -246,5 +224,17 @@ def crear_item_venta(request):
     return render(request, 'ventas/administrarVentas.html', {'form': form, 'formset': formset})
 
 
+# views.py
+from django.http import JsonResponse
+from .models import Producto  # Asegúrate de tener un modelo Producto que contenga los precios
 
-
+def obtener_precio_producto(request):
+    producto_id = request.GET.get('producto_id')
+    if producto_id:
+        try:
+            producto = Producto.objects.get(id=producto_id)
+            precio = producto.precio  # Asumiendo que el modelo Producto tiene un campo 'precio'
+            return JsonResponse({'precio': precio}, status=200)
+        except Producto.DoesNotExist:
+            return JsonResponse({'error': 'Producto no encontrado'}, status=404)
+    return JsonResponse({'error': 'ID de producto no proporcionado'}, status=400)

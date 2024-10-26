@@ -1,386 +1,325 @@
-    {% extends "base/base.html" %}
-    {% block title %} Ventas {% endblock %}
-    {% block contenido %}
+{% extends "base/base.html" %}
+{% block title %} Ventas {% endblock %}
+{% block contenido %}
 
 
-                <!-- contenido -->
-                <div class="card p-3" style="border-radius: 10px;">
-                  <p class="card-title">Administración de Categorias</p>
-                    <form class="formularioRegistrarProducto mb-4" id="formularioVenta" action="{% url 'ventas:crear_item_venta' %}" method='POST'>
-                      {% csrf_token %}
-                      <div class="row align-items-center">
+            <!-- contenido -->
+            <div class="card p-3" style="border-radius: 10px;">
+              <p class="card-title">Administración de Ventas</p>
+                <form class="formularioRegistrarProducto mb-4" id="formularioVenta" action="{% url 'ventas:crear_item_venta' %}" method='POST'>
+                  {% csrf_token %}
+                  <div class="row align-items-center">
 
-                        <div class="col-md-2 me-4">
-                              <div class="form-group">
-                                  <label >Venta:</label>
-                                  {{form.venta_tipo}}
-                              </div>
-                        </div>
-
-                        <div class="col-md-2 me-4">
-                              <div class="form-group">
-                                <label>Pago:</label>
-                                {{form.pago_tipo}}
-                              </div>
-                        </div>
-
-                        <div class="col-md-2 me-4">
-                              <div class="form-group">
-                                  <label >Comprobante:</label>
-                                  {{form.comprobante_tipo}}
-                              </div>
-                        </div>
-
-                        <div class="col-md-2 me-4">
-                              <div class="form-group">
-                                  <label >Nro de Comprobante:</label>
-                                  {{form.nro_comprobante}}
-                              </div>
-                        </div>
-
-
+                    <div class="col-md-2 me-4">
+                          <div class="form-group">
+                              <label >Venta:</label>
+                              {{form.venta_tipo}}
+                          </div>
                     </div>
-                        <div class="row">
-                             <div class="col-md-4">
-                                 <div class="form-group">
-                                      <label >Observaciones:</label>
-                                      {{form.observaciones}}
-                                </div>
+
+                    <div class="col-md-2 me-4">
+                          <div class="form-group">
+                            <label>Pago:</label>
+                            {{form.pago_tipo}}
+                          </div>
+                    </div>
+
+                    <div class="col-md-2 me-4">
+                          <div class="form-group">
+                              <label >Comprobante:</label>
+                              {{form.comprobante_tipo}}
+                          </div>
+                    </div>
+
+                    <div class="col-md-2 me-4">
+                          <div class="form-group">
+                              <label >Nro de Comprobante:</label>
+                              {{form.nro_comprobante}}
+                          </div>
+                    </div>
+
+
+                </div>
+                    <div class="row align-items-center">
+
+                         <div class="col-md-4">
+                             <div class="form-group">
+                                  <label >Observaciones:</label>
+                                  {{form.observaciones}}
                             </div>
                         </div>
 
-                        <!-- experimental -->
-
-              <div class="row justify-content-end col-md-9 ">
-                          <div class="col-md-2 mt-2">
-                            <input type="button" class="btn btn-success btn-sm  mt-1" id="agregarForm" onclick="agregarItem()" value="nuevo item">
-                          </div>
-              </div>
-            <!--Tabla de productos-->
-
-            <div class="col-md-9">
-            <div class="table-responsive mt-1 mb-4" style="max-height: 400px; overflow-y: auto;">
-              <table class="table table-hover " id="tablaItems">
-                <thead>
-                  <tr>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Precio</th>
-                    <th>Total</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                <!-- aca estan los formsets ------------------>
-                         {{ formset.management_form }}
-                         {% for form in formset %}
-                  <tr>
-                    <td>{{form.producto}}
-                        {% if form.producto.errors %}
-                         <div class="alert alert-danger d-flex align-items-center" role="alert">
-                                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                                        <div>
-                                                    {% for error in form.producto.errors %}
-                                                            {{error}}
-                                                    {% endfor %}
-                                        </div>
-                         </div>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {{form.cantidad}}
-                        {% if form.cantidad.errors %}
-                        <div class="alert alert-danger d-flex align-items-center" role="alert">
-                                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                                        <div>
-                                                    {% for error in form.cantidad.errors %}
-                                                            {{error}}
-                                                    {% endfor %}
-                                        </div>
-                        </div>
+                        <div class="col-md-6 me-2">
+                            {% if messages %}
+           
+                                {% for message in messages %}
+           
+                                    {% if 'success' in message.tags %}
+                                       <div  class=" alert alert-success d-flex align-items-center" role="alert">
+                                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                                               <div>
+                                                           {{message}}
+                                               </div>
+                                       </div>
+                                       {% elif 'error' in message.tags %}
+                                       <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                           <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                               <div>
+                                                           {{message}}
+                                               </div>
+                                       </div>
+                                    {% endif %}
+           
+                                {% endfor %}
+           
                             {% endif %}
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                    <td><input type="button" class="btn btn-danger btn-sm mt-4" onclick="eliminar(this)" value="eliminar"></td>
-                  </tr>
-                    {% endfor %}
-
-                </tbody>
-              </table>
-            </div>
-            </div>
-
-                         <div class="row justify-content-end col-md-9 ">
-                          <div class="col-md-2 mt-2">
-                            <button type="submit" class="btn btn-success btn-sm  mt-4">realizar venta</button>
-                          </div>
-                         <div class="col-md-2  mt-2">
-                           <button type="reset" class="btn btn-danger btn-sm mt-4">cancelar</button>
-                          </div>
-                     </div>
-
-
-                    </form>
-
-                       <div class="col-md-6 me-2">
-                     {% if messages %}
-
-                         {% for message in messages %}
-
-                             {% if 'success' in message.tags %}
-                                <div  class=" alert alert-success d-flex align-items-center" role="alert">
-                                     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
-                                        <div>
-                                                    {{message}}
-                                        </div>
-                                </div>
-                                {% elif 'error' in message.tags %}
-                                <div class="alert alert-danger d-flex align-items-center" role="alert">
-                                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                                        <div>
-                                                    {{message}}
-                                        </div>
-                                </div>
-                             {% endif %}
-
-                         {% endfor %}
-
-                     {% endif %}
-                             </div>
-
-
-
-    <!----------------------------------esto no es aparte de la pagina----------------------------------------------------->
-                        <hr class="col-md-9">
-
-                    <div class="row align-items-center">
-
-                      <div class="col-md-3 me-4">
-                        <div class="form-group">
-                            <label >Categoria:</label>
-                            <select name="categoriaSelect" id="categoriaSelect" class="form-select text-black" >
-                                <option>Seleccione una Categoria</option>
-                                {% for categoria in categorias %}
-                                <option value={{categoria.id}}>{{categoria.nombre}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                      </div>
-
-                      <div class="col-md-4 me-4">
-                        <div class="form-group">
-                            <label >Producto:</label>
-                            <select name="productoSelect" id="productoSelect" class="form-select text-black">
-                               <option>Sin Productos</option>
-                                {% for producto in productos %}
-                                <option value={{producto.id}}> {{producto.descripcion}} </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                      </div>
-
-                      <div class="col-md-1 me-1">
-                        <div class="form-group">
-                            <label >Cantidad:</label>
-                            <input type="number" id="cantidad" class='form-control form-control-sm text-black' >
-                        </div>
-                      </div>
-
-                      <div class="col-md-3 ">
-
-                        <input type="button" class="btn btn-primary btn-sm mb-2" onclick="cargarTabla()" value="agregar">
-
-                      </div>
+                                    </div>
 
                     </div>
-                    <hr class="col-md-9">
 
+                    <!-- experimental -->
 
-            <!--Tabla de productos-->
+          <div class="row justify-content-end col-md-9 ">
+                      <div class="col-md-2 mt-2">
+                        <input type="button" class="btn btn-success btn-sm  mt-1" id="agregarForm" onclick="agregarItem()" value="nuevo item">
+                      </div>
+          </div>
+        <!--Tabla de productos-->
 
-            <div class="col-md-9">
-            <div class="table-responsive mt-1 mb-4" style="max-height: 400px; overflow-y: auto;">
-              <table class="table table-hover " id="tablaProductos">
-                <thead>
-                  <tr>
-                    <th>Codigo</th>
-                    <th>Descripcion</th>
-                    <th>Cantidad</th>
-                    <th>Precio</th>
-                    <th>Total</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-
-                  <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-
-                </tbody>
-              </table>
-            </div>
-            </div>
-
-                     <div class="row justify-content-end col-md-9 ">
-                          <div class="col-md-3 text-end mt-2">
-                            <strong>Total:</strong>
-                          </div>
-
-                         <div class="col-md-2 text-end">
-                            <input type="text" id="id_total" class="form-control form-control-sm" disabled>
-
-                          </div>
+        <div class="col-md-10">
+        <div class="table-responsive mt-1 mb-4" style="max-height: 400px; overflow-y: auto;">
+          <table class="table table-hover " id="tablaItems">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+            <!-- aca estan los formsets ------------------>
+                     {{ formset.management_form }}
+                     {% for form in formset %}
+              <tr>
+                <td>{{form.producto}}
+                    {% if form.producto.errors %}
+                     <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                    <div>
+                                                {% for error in form.producto.errors %}
+                                                        {{error}}
+                                                {% endfor %}
+                                    </div>
                      </div>
+                    {% endif %}
+                </td>
+                <td>
+                    {{form.cantidad}}
+                    {% if form.cantidad.errors %}
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                    <div>
+                                                {% for error in form.cantidad.errors %}
+                                                        {{error}}
+                                                {% endfor %}
+                                    </div>
+                    </div>
+                        {% endif %}
+                </td>
+                <td class="precioProducto"></td>
+                <td class="totalProducto"></td>
+                <td>
+                <td><input type="button" class="btn btn-danger btn-sm mt-4" onclick="eliminar(this)" value="eliminar"></td>
+              </tr>
+                {% endfor %}
 
-            <hr class="col-md-9">
+            </tbody>
+          </table>
+        </div>
+        </div>
+
+        <div class="row justify-content-end col-md-9">
+            <div class="col-md-4 mt-2 d-flex align-items-center">
+                <p class="mb-0 me-2"><strong>Total:</strong></p>
+                <input type="text" id="totalFacturado" class="totalFacturado form-control form-control-sm text-black" disabled >
+            </div>
+        </div>
+        
+        <hr class="col-md-10">
+
+                     <div class="row justify-content-end col-md-10 ">
+                      <div class="col-md-2 mt-3">
+                        <button type="submit" class="btn btn-success btn-sm  mt-4">realizar venta</button>
+                      </div>
+                     <div class="col-md-1 mt-3 ">
+                       <button type="reset" class="btn btn-danger btn-sm mt-4">cancelar</button>
+                      </div>
+                 </div>
 
 
-              </div>
-              <!-- fin contenido -->
+                </form>
 
-
-
-
-
-
-    <script>
-
-      let categoriaSelect = document.getElementById('categoriaSelect');
-      let productoSelect = document.getElementById('productoSelect');
-      let cantidad = document.getElementById('cantidad');
-
-      let totalFacturado = document.getElementById('id_total');
-      let venta = 0;
-      let tablaProductos = document.getElementById('tablaProductos').getElementsByTagName('tbody')[0];
-
-      function cargarTabla(){
-        producto_id = productoSelect.value;
-        let cant = parseInt(cantidad.value);
-
-
-          if(producto_id && cant >0 ) {
-
-              fetch(`obtener-producto/${producto_id}`)
-
-              .then(response => response.json())
-
-              .then(data => {
-
-                if(data.producto) {
-                  let producto = data.producto;
-                  let total = (parseFloat(producto.precio)* cant).toFixed(2);
-                  venta = (parseFloat(venta) + parseFloat(total)).toFixed(2);
-                  console.log(venta)
-                  totalFacturado.value = venta;
+                  
 
 
 
-                  // agregamos el elemeto a la tablaProductos
 
-                  let nuevaFila = tablaProductos.insertRow();
-                  nuevaFila.innerHTML = `
-                    <td>${producto.id}</td>
-                    <td>${producto.descripcion}</td>
-                    <td>${cant}</td>
-                    <td>${producto.precio}</td>
-                    <td>${total}</td>
-                    <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarFila(this)">Eliminar</button></td>
+                   
 
-                  `;
-                } else {
-                    alert('producto no encontrado')
+
+
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+ 
+
+ // Función para calcular y actualizar el total facturado
+ function actualizarTotalFacturado() {
+    let totalFacturado = 0;
+    $('#tablaItems .totalProducto').each(function() {
+        const total = parseFloat($(this).text()) || 0;
+        totalFacturado += total;
+    });
+    $('#totalFacturado').val(totalFacturado.toFixed(2));
+    console.log('buenasss')
+}
+
+
+    $(document).ready(function() {
+        // Detectar cambio en el producto seleccionado
+        $('#tablaItems').on('change', 'select', function() {
+            const productoId = $(this).val();
+            const fila = $(this).closest('tr');
+    
+            if (productoId) {
+                $.ajax({
+                    url: '{% url "ventas:obtener_precio_producto" %}', // URL de tu vista Ajax para obtener el precio
+                    data: {
+                        'producto_id': productoId
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.precio) {
+                            const precio = parseFloat(data.precio);
+                            fila.find('.precioProducto').text(precio.toFixed(2));
+                            actualizarTotalFila(fila); // Actualizar el total de la fila
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al obtener el precio:', error);
+                        fila.find('.precioProducto').text('0.00');
+                        actualizarTotalFila(fila);
                     }
+                });
+            } else {
+                fila.find('.precioProducto').text('0.00');
+                actualizarTotalFila(fila);
+            }
+        });
+    
+         // Detectar cambio en la cantidad ingresada
+         $('#tablaItems').on('input', 'input[type="number"]', function() {
+            const fila = $(this).closest('tr');
+            actualizarTotalFila(fila);
+            actualizarTotalFacturado(); // aca lo puse
+        });
 
-              })
-                .catch(erro => console.error('error al obtener el produco', error));
-          }
-      }
+        // Función para calcular y actualizar el total de una fila
+        function actualizarTotalFila(fila) {
+            const precio = parseFloat(fila.find('.precioProducto').text()) || 0;
+            const cantidad = parseInt(fila.find('input[type="number"]').val()) || 0;
+            const total = precio * cantidad;
+            fila.find('.totalProducto').text(total.toFixed(2));
+            actualizarTotalFacturado(); // aca lo puse
 
-      function eliminarFila(btn ){
-        // Eliminar la fila de la tabla
-        let fila = btn.parentNode.parentNode;
+          
+        }
 
-        fila.parentNode.removeChild(fila);
+        // Asegurarse de actualizar el total facturado al cargar la página
+        actualizarTotalFacturado(); 
+
+    }); // Aquí se cierra correctamente
+    
+
+
+
+  
+
+
+    
+    //funciones de la venta en la BD
+
+    function eliminar(btn){
+    let fila = btn.parentNode.parentNode;
+    fila.parentNode.removeChild(fila);
+        actualizarContadorFormularios();
+        actualizarTotalFacturado(); // aca lo puse
+    }
+
+    function actualizarContadorFormularios(){
+        totalForms = document.getElementById('id_items-TOTAL_FORMS')
+        totalForms.value = parseInt(totalForms.value) - 1;
     }
 
 
+    function agregarItem(){
 
-        function ConsultarProducto(){
+    //actualizamos el contador del administrado de django
+        totalForms = document.getElementById('id_items-TOTAL_FORMS')
+        let numero = parseInt( totalForms.value );
+        totalForms.value = parseInt(totalForms.value) + 1;
+        
 
+    //seleccionamos la fila base
+    let filaBase = document.querySelector('#tablaItems tbody tr');
 
-        }
-        //funciones de la venta en la BD
+    if(filaBase) {
+    //clonamos la fila base
+    let nuevaFila = filaBase.cloneNode(true);
 
-        function eliminar(btn){
-        let fila = btn.parentNode.parentNode;
-        fila.parentNode.removeChild(fila);
-            actualizarContadorFormularios();
-        }
+    //limpiamos los campos de la fila clonada
+    let inputs = nuevaFila.querySelectorAll('input');
+    let selects = nuevaFila.querySelector('select');
 
-        function actualizarContadorFormularios(){
-            totalForms = document.getElementById('id_items-TOTAL_FORMS')
-            totalForms.value = parseInt(totalForms.value) - 1;
-        }
-
-
-        function agregarItem(){
-
-        //actualizamos el contador del administrado de django
-            totalForms = document.getElementById('id_items-TOTAL_FORMS')
-            let numero = parseInt( totalForms.value );
-            totalForms.value = parseInt(totalForms.value) + 1;
-            
-
-        //seleccionamos la fila base
-        let filaBase = document.querySelector('#tablaItems tbody tr');
-
-        if(filaBase) {
-        //clonamos la fila base
-        let nuevaFila = filaBase.cloneNode(true);
-
-        //limpiamos los campos de la fila clonada
-        let inputs = nuevaFila.querySelectorAll('input');
-        let selects = nuevaFila.querySelector('select');
-
-        inputs.forEach( input => {
-        //limpiamos los campos
-        if(input.type === "text" || input.type === "number") {
-            input.value = "";
-        }
-
-        //actualizamos los nombres de los tipo number
-        inputs.forEach( input => {
-        if(input.type === "number"){
-            input.name = `items-${numero}-cantidad`;
-            input.value='1';
-        }  });
-
-         // Si es un select, cambia el nombre
-        selects.name =`items-${numero}-producto`;
-
-       });
-
-
-            let tabla = document.getElementById('tablaItems').getElementsByTagName('tbody')[0];
-            tabla.appendChild(nuevaFila);
-
-
-
-     }else{
-            console.error('no se encontro una fila base para clonar')
-     }
+    inputs.forEach( input => {
+    //limpiamos los campos
+    if(input.type === "text" || input.type === "number") {
+        input.value = "";
     }
 
+    //actualizamos los nombres de los tipo number
+    inputs.forEach( input => {
+    if(input.type === "number"){
+        input.name = `items-${numero}-cantidad`;
+        input.value='1';
+    }  });
+
+     // Si es un select, cambia el nombre
+    selects.name =`items-${numero}-producto`;
+
+    
+        // Limpiamos los valores de las celdas de precio y total
+        nuevaFila.querySelector('.precioProducto').textContent = '0.00';
+        nuevaFila.querySelector('.totalProducto').textContent = '0.00';
+
+   });
 
 
-    </script>
+        let tabla = document.getElementById('tablaItems').getElementsByTagName('tbody')[0];
+        tabla.appendChild(nuevaFila);
+        actualizarTotalFacturado(); // aca lo puse
 
-    {% endblock %}
+
+
+ }else{
+        console.error('no se encontro una fila base para clonar')
+ }
+}
+
+
+
+</script>
+
+{% endblock %}

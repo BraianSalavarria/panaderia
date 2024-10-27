@@ -1,0 +1,189 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %} Home {% endblock %}</title>
+
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'assets/vendors/simple-line-icons/css/simple-line-icons.css' %}">
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{% static 'assets/css/vertical-light-layout/style.css' %}">
+    <!-- End layout styles -->
+
+  </head>
+  <body>
+          <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                            <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+                                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                            </symbol>
+                            <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                            </symbol>
+        </svg>
+
+
+
+    <div class="container-scroller">
+      
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+          <a class="navbar-brand brand-logo" href="index.html">
+            <img src="{% static 'assets/images/logopng-redongo-bg-white-mas redondo.png' %}" style=" max-height: 78px;height: auto;width: auto; margin-top: 10px;" alt="logo"/>
+          </a>
+          <a class="navbar-brand brand-logo-mini"></a>
+          <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+            <span class="icon-menu"></span>
+          </button>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-center">
+          <h5 class="mb-0 font-weight-medium d-none d-lg-flex">Bienvenido al dashboard Usuario!</h5>
+          <ul class="navbar-nav navbar-nav-right">
+            <form class="search-form d-none d-md-block" action="#">
+              <i class="icon-magnifier"></i>
+              <input type="search" class="form-control" placeholder="Search Here" title="Search here">
+            </form>
+          </ul>
+
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+            <span class="icon-menu"></span>
+          </button>
+        </div>
+      
+      </nav>
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item navbar-brand-mini-wrapper">
+              <a class="nav-link navbar-brand brand-logo-mini" href="base.html"><img src="{% static 'assets/images/logo-mini.ico' %}" style=" max-height: 35px;height: auto;width: auto; margin-top: 12px;" alt="logo" /></a>
+            </li>
+
+            <li class="nav-item nav-category"><span class="nav-link mt-3">Panaderia</span></li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <span class="menu-title mb-0">Productos y Categorias</span>
+                <i class="icon-layers menu-icon"></i>
+              </a>
+              <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'ventas:lista_productos' %}">Registrar/Eliminar</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'ventas:lista_categorias' %}">Categorias</a></li>
+                </ul>
+              </div>
+            </li>
+            
+            <li class="nav-item nav-category"><span class="nav-link mt-3">Administrar</span></li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#forms" aria-expanded="false" aria-controls="forms">
+                <span class="menu-title">Clientes Mayoristas</span>
+                <i class="icon-book-open menu-icon"></i>
+              </a>
+              <div class="collapse" id="forms">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'ventas:lista_mayoristas' %}">Registrar/Eliminar</a></li>
+                </ul>
+              </div>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
+                <span class="menu-title">Proveedores </span>
+                <i class="icon-chart menu-icon"></i>
+              </a>
+              <div class="collapse" id="charts">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'inventario:lista_proveedores' %}">Registrar/Eliminar</a></li>
+                </ul>
+              </div>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
+                <span class="menu-title">Empleados</span>
+                <i class="icon-grid menu-icon"></i>
+              </a>
+              <div class="collapse" id="tables">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'empleados:lista_empleados' %}">Registrar/Eliminar</a></li>
+                  
+                </ul>
+              </div>
+            </li>
+
+            <li class="nav-item nav-category"><span class="nav-link mt-3">Stock</span></li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
+                <span class="menu-title">Pedidos</span>
+                <i class="icon-globe menu-icon"></i>
+              </a>
+              <div class="collapse" id="icons">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="./agregarPedido.html">Regitrar Pedido</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="./controlaPedido.html">Controlar Pedido</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="./stock.html">Stock Disponible</a></li>
+                </ul>
+              </div>
+            </li>
+
+            <li class="nav-item nav-category"><span class="nav-link">Comercio</span></li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+                <span class="menu-title">Ventas</span>
+                <i class="icon-disc menu-icon"></i>
+              </a>
+              <div class="collapse" id="auth">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'ventas:registrar_venta' %}"> Registrar Venta </a></li>
+                  <li class="nav-item"> <a class="nav-link" href="./ventasRealizadas.html"> Ventas Realizadas</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="./comprobantes.html"> Comprobantes</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="./estadisticas.html"> Estadisticas de Venta</a></li>
+                </ul>
+              </div>
+            </li>
+
+          </ul>
+        </nav>
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+
+              {% block contenido %}
+              {% endblock %}
+
+          </div>
+          <!-- content-wrapper ends -->
+
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between ">
+              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024 Panaderia Mana. All rights reserved. <a href="#"> Terms of use</a><a href="#">Privacy Policy</a></span>
+              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="icon-heart text-danger"></i></span>
+            </div>
+          </footer>
+          <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    
+
+
+    <!--scripts necesarios, pagina base -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'assets/js/SelectBraianJS.js' %}"></script>
+    <script src="{% static 'assets/js/VentasBraian.js' %}"></script>
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <script src="{% static 'assets/js/misc.js' %}"></script>
+    <script src="{% static 'assets/js/dashboard.js' %}"></script>
+    <script src="{% static 'assets/js/braianJS.js' %}"></script>
+
+  </body>
+</html>
+

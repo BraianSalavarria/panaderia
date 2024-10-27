@@ -5,6 +5,11 @@ from Apps.empleados.models import Empleado
 
 
 # Create your views here.
+def home(request):
+    return render(request,'base/home.html')
+
+def log(request):
+    return render(request,'base/login.html')
 
 def lista_empleados(request):
     empleados = Empleado.objects.all()

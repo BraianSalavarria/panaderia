@@ -17,6 +17,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import TemplateView
 
 from Apps import empleados
 
@@ -25,5 +26,7 @@ urlpatterns = [
     path('ventas/',include('Apps.ventas.urls',namespace='ventas')),
     path('empleados/',include('Apps.empleados.urls',namespace='empleados')),
     path('inventario/',include('Apps.inventario.urls',namespace='inventario')),
-    path('',empleados.views.home,name='home'),
+    path('',TemplateView.as_view(template_name='base/base.html'),name='home'),
+    path('',include('Apps.usuario.urls',namespace='usuario')),
+    
 ]

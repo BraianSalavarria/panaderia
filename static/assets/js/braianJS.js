@@ -226,3 +226,24 @@ function modalEditarProducto(id_producto,descripcion,cantidad,id_categoria,preci
         var modal = new bootstrap.Modal(document.getElementById('modalEditarProveedor'));
         modal.show();
     }
+
+    function modalEditarInsumo(id_insumo, nombre, cantidad) {
+        // Asignar los valores al modal
+            document.getElementById('id_insumo').value = id_insumo;
+            document.getElementById('descripcionM').value = nombre;
+            document.getElementById('cantidadM').value = cantidad;
+
+
+        // Mostrar el modal
+        var modal = new bootstrap.Modal(document.getElementById('modalEditarInsumo'));
+        modal.show();
+    }
+
+    function modalEliminarInsumo(insumo_id) {
+        // Configura la URL del botón de confirmación en el modal
+        const urlEliminar = `eliminar-insumo/${insumo_id}`
+        document.getElementById('confirmarEliminar').setAttribute('href', urlEliminar);
+        // Muestra el modal de eliminación
+        const modal = new bootstrap.Modal(document.getElementById('modalEliminar'));
+        modal.show();
+    }

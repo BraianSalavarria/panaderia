@@ -1,0 +1,73 @@
+{% extends "base/base.html" %}
+{% block title %} Lista de Ventas {% endblock %}
+{% block contenido %}
+
+
+
+<div class="card p-3" style="border-radius: 10px;">
+              <p class="card-title">Lista de Ventas</p>
+
+
+    <div class="col-md-6">
+                {% if messages %}
+                     {% for message in messages %}
+                         {% if 'success' in message.tags %}
+                            <div  class=" alert alert-success d-flex align-items-center" role="alert">
+                                 <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                                    <div>
+                                                {{message}}
+                                    </div>
+                            </div>
+                            {% elif 'error' in message.tags %}
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                    <div>
+                                                {{message}}
+                                    </div>
+                            </div>
+                         {% endif %}
+                     {% endfor %}
+                {% endif %}
+            </div>
+
+
+        <!--Tabla para editar o eliminar una categoria-->
+
+        <div class="col-md-4 mt-4">
+          <div class="form-group">
+            <i class="icon-magnifier"></i>
+              <label>Buscar:</label>
+              <input type="text" class="form-control  form-control-sm " id="buscarVenta" name="buscarVenta" placeholder=""  >
+          </div>
+        </div>
+
+
+        <div class="col-md-6">
+        <div class="table-responsive mt-1 mb-4" style="max-height: 400px; overflow-y: auto;">
+          <table class="table table-hover mb-4" id="tablaContenido" >
+            <thead>
+              <tr>
+                <th>Nro Comprobante</th>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Empleado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for venta in ventas %}
+              <tr>
+                <td>{{venta.nro_comprobante}}</td>
+                <td>{{venta.fecha}}</td>
+                <td>{{venta.total}}</td>
+                <td>{{venta.empleado}}</td>
+                  <td>  <a class="btn btn-primary btn-sm" href="{% url 'ventas:imprimir_venta' %}"> descagar</a>   </td>
+              </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,188 @@
+{% extends 'base/base.html' %}
+{%block title%} Administracion de Stock {% endblock %}
+{% block contenido %}
+
+
+<div class="card p-3" style="border-radius: 10px;">
+              <p class="card-title">Administración de Stock</p>
+                <form class="formularioRegistrarInsumo mb-4 " action="{% url 'inventario:agregar_insumo' %}" method="POST">
+                    {%csrf_token%}
+                  <div class="row">
+
+                          <div class="col-md-3 me-2">
+                              <div class="form-group">
+                                  <label>Descripcion:</label>
+                                  <input type="text" id="descripcion" name="descripcion" class="form-control form-control-sm">
+
+                              </div>
+                          </div>
+                          <div class="col-md-1 me-2">
+                              <div class="form-group">
+                                <label>Cantidad:</label>
+                                  <input type="number" id="cantidad" name="cantidad" class="form-control form-control-sm" min="0" value="1">
+
+                              </div>
+                          </div>
+
+                      </div>
+
+                      
+
+                  <button type="submit" class="btn btn-success btn-sm me-2">registrar</button>
+                  <button type="reset" class="btn btn-danger btn-sm">cancelar</button>
+              </form>
+
+             <div class="col-md-6 me-2">
+                 {% if messages %}
+
+                     {% for message in messages %}
+
+                         {% if 'success' in message.tags %}
+                            <div  class=" alert alert-success d-flex align-items-center" role="alert">
+                                 <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                                    <div>
+                                                {{message}}
+                                    </div>
+                            </div>
+                            {% elif 'error' in message.tags %}
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                    <div>
+                                                {{message}}
+                                    </div>
+                            </div>
+                         {% endif %}
+
+                     {% endfor %}
+
+                 {% endif %}
+                </div>
+
+                 <!--Tabla para editar o eliminar un Insumo-->
+
+        <div class="col-md-4 mt-4">
+          <div class="form-group">
+            <i class="icon-magnifier"></i>
+              <label for="buscarProducto">Buscar:</label>
+              <input type="text" class="form-control form-control-sm " id="buscarProducto" name="buscarProducto" placeholder="Insumo" required >
+          </div>
+        </div>
+              <div class="table-responsive mt-1 mb-3 col-md-10" style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-hover mb-4" id="tablaContenido">
+                  <thead>
+                    <tr>
+                      <th>Descripcion</th>
+                      <th>Cantidad</th>
+                      <th>Proveedor</th>
+                      <th>Asignar Proveedor</th>
+                      <th></th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                        {% for insumo in stock %}
+                    <tr>
+                      <td>{{insumo.nombre}}</td>
+                      <td>{{insumo.cantidad}}</td>
+                      <td>
+                            <select class="form-control form-control-sm text-black" >
+                                {% for proveedor in insumo.proveedores.all %}
+                                    <option>{{ proveedor.nombre }} - ({{ proveedor.empresa }})</option>
+                                {% empty %}
+                                    <option>Sin proveedores asignados</option>
+                                {% endfor %}
+                            </select>
+                      </td>
+                      <td>
+                             <div class="d-flex align-items-center">
+                        <!-- Formulario para asignar un nuevo proveedor -->
+                        <form action="{% url 'inventario:editar_proveedor_insumo' insumo.id %}" method="POST" class="d-inline-block me-2">
+                            {% csrf_token %}
+                            <select name="nuevo_proveedor" class="form-control form-control-sm mb-1 text-black">
+                                <option value="">Seleccionar proveedor</option>
+                                {% for proveedor in proveedores %}
+                                    <option value="{{ proveedor.id }}">{{ proveedor.nombre }} - {{ proveedor.empresa }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-sm ms-1">Guardar</button>
+                        </form>
+                             </div>
+                      </td>
+                        <td>
+                        <!-- Formulario para eliminar un proveedor asignado -->
+                        <form action="{% url 'inventario:eliminar_proveedor_insumo' insumo.id %}" method="POST" class="d-inline-block">
+                            {% csrf_token %}
+                            <select name="proveedor_a_eliminar" class="form-control form-control-sm mb-1 text-black">
+                                {% for proveedor in insumo.proveedores.all %}
+                                    <option value="{{ proveedor.id }}">{{ proveedor.nombre }} - {{ proveedor.empresa }}</option>
+                                {% empty %}
+                                    <option>No hay proveedores asignados</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-danger btn-sm ms-1">Eliminar</button>
+                        </form>
+
+                </td>
+                        <td> <button class="btn btn-warning btn-sm" onclick="modalEditarInsumo({{insumo.id}},'{{insumo.nombre}}','{{insumo.cantidad}}')">editar</button>
+                             <button class="btn btn-danger btn-sm " onclick="modalEliminarInsumo({{insumo.id}})">eliminar</button>
+                        </td>
+
+                    </tr>
+                            {% endfor %}
+
+                  </tbody>
+                </table>
+              </div>
+
+<!-- Modal para Editar un Insumo-->
+<div class="modal fade" id="modalEditarInsumo" tabindex="-1" aria-labelledby="modalEditarInsumoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEditarInsumoLabel">Editar Insumo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="background-color: #1C1B29">
+        <form id="formEditarInsumo" action="{% url 'inventario:editar_insumo' %}" method="POST">
+          {% csrf_token %}
+          <input type="hidden" id="id_insumo" name="id_insumo">
+
+          <div class="mb-3">
+            <label style="color: #32CD32">Descripcion:</label>
+            <input type="text" id="descripcionM" name="descripcionM" class="form-control form-control-sm text-white">
+          </div>
+
+          <div class="col-md-2 mb-3">
+            <label style="color: #32CD32">Cantidad:</label>
+            <input type="number" id="cantidadM" name="cantidadM" class="form-control form-control-sm text-white" min="0" value="1">
+          </div>
+
+          <button type="submit" class="btn btn-success btn-sm me-2">Guardar cambios</button>
+          <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+        <!-- modal para eliminar un Insumo -->
+    <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminar" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="modal">Eliminar</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center" style="background-color: #1C1B29">
+              <label for="confirmarEliminar" class="form-label form-control-sm" style="color: #32CD32">¿Está seguro?</label><br>
+              <a id="confirmarEliminar" class="btn btn-danger btn-sm mt-3 me-2" href="#">Eliminar</a>
+              <button type="button" class="btn btn-danger btn-sm mt-3" data-bs-dismiss="modal" aria-label="Close">cancelar</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+</div>
+
+
+{% endblock %}

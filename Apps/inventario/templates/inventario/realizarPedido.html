@@ -1,0 +1,246 @@
+{% extends 'base/base.html' %}
+{%block title%} Administracion de Pedidos {% endblock %}
+{% block contenido %}
+
+        <div class="card p-3" style="border-radius: 10px;">
+              <p class="card-title">Administración de Stock</p>
+                <form class="formularioRegistrarPedido  " action="{% url 'inventario:crear_item_pedido' %}" method="POST">
+                    {%csrf_token%}
+
+                    <div class="row">
+
+                          <div class="col-md-2 me-4">
+                              <div class="form-group">
+                                  <label>Fecha:</label>
+                                  <input type="date" id="fecha" name="fecha" class="form-control form-control-sm" disabled>
+
+                              </div>
+                          </div>
+                          <div class="col-md-2 me-4">
+                              <div class="form-group">
+                                <label>Nro Pedido:</label>
+                                 <input type="text" id="nro_pedido" name="nro_pedido" class="form-control form-control-sm">
+                              </div>
+                          </div>
+
+                      <div class="col-md-4 me-2">
+                                <div class="form-group">
+                                    <label>Obervaciones:</label>
+                                    <textarea class="form-control form-control-sm" cols="8" rows="5" id="observaciones" name="observaciones"> </textarea>
+                                </div>
+                        </div>
+
+                  </div>
+
+                     <div class="col-md-3 me-2">
+                                <div class="form-group">
+                                    <label>Proveedor:</label>
+                                    <select class="form-select form-select-sm text-black" id="proveedor-select" name='proveedor-select'>
+                                        {% for proveedor in proveedores%}
+                                        <option value="{{proveedor.id}}">{{proveedor.nombre}} - {{proveedor.empresa}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6 me-2">
+                              {% if messages %}
+             
+                                  {% for message in messages %}
+             
+                                      {% if 'success' in message.tags %}
+                                         <div  class=" alert alert-success d-flex align-items-center" role="alert">
+                                              <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                                                 <div>
+                                                             {{message}}
+                                                 </div>
+                                         </div>
+                                         {% elif 'error' in message.tags %}
+                                         <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                                 <div>
+                                                             {{message}}
+                                                 </div>
+                                         </div>
+                                      {% endif %}
+             
+                                  {% endfor %}
+             
+                              {% endif %}
+                             </div>
+             
+
+
+            <div class="row justify-content-end col-md-8 ">
+                      <div class="col-md-2">
+                        <input type="button" class="btn btn-success btn-sm  mt-1"  onclick="agregarItem()" value="nuevo item">
+                      </div>
+          </div>
+                <hr class="col-md-8">
+            <!-- ----------------------------------------Tabla de items de Pedidos ------------------------------------------------------------------------- -->
+
+              <div class="col-md-8">
+                <div class="table-responsive mt-1 mb-4" style="max-height: 400px; overflow-y: auto;">
+                      <table class="table table-hover mb-4" id="tablaItems" >
+                        <thead>
+                          <tr>
+                            <th>Insumo</th>
+                            <th>Cantidad</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                         {{ formset.management_form }}
+                         {% for form in formset %}
+                          <tr>
+                            <td> {{form.insumo}} </td>
+                            <td> {{form.cantidad}} </td>
+                            <td>  <button type="button" class="btn btn-danger btn-sm me-2" onclick="eliminarFila(this)">eliminar</button> </td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                </div>
+              </div>
+
+
+
+
+
+                <div class="row justify-content-end col-md-8 ">
+                      <div class="col-md-3 ">
+                        <button type="submit" class="btn btn-success btn-sm  ">realizar pedido</button>
+                      </div>
+                     <div class="col-md-1  ">
+                       <button type="reset" class="btn btn-danger btn-sm ">cancelar</button>
+                      </div>
+                 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </form>
+        </div>
+
+
+
+
+<script>
+
+           document.addEventListener('DOMContentLoaded', () =>{
+           generarNroPedido();
+           obtenerFechaActual();
+
+            })
+
+            function generarNroPedido(){
+             var min = 000000000000;
+                 var max = 999999999999;
+                 var x = Math.floor(Math.random()*(max-min+1)+min);
+                 document.getElementById('nro_pedido').value = x;
+            }
+
+
+    document.getElementById('proveedor-select').addEventListener('change', function(){
+        const proveedorId = this.value;
+        console.log('hola');
+        const insumoSelect = document.getElementById('id_items-0-insumo');
+        //limpiamos las opciones de insumos
+        insumoSelect.innerHTML = '<option value=""> -------------- </option>';
+
+        //hacemos la peticion si se selecciono un proveedor valido
+
+        if(proveedorId){
+            fetch(`obtener-insumos-proveedor/${proveedorId}`)
+            .then(response => response.json())
+            .then(data => {
+                //agregar aca insumo al select
+                data.forEach(insumo => {
+                console.log(insumo.id)
+
+                const option = document.createElement('option');
+                option.value = insumo.id;
+                option.textContent = `${insumo.nombre} - Cantidad Disponible ${insumo.cantidad}`;
+                insumoSelect.appendChild(option);
+            });
+        })
+           .catch(error => console.error('Error al cargar insumos:',error));
+        }
+    });
+
+
+function obtenerFechaActual(){
+    let fechaActual = new Date();
+    let año = fechaActual.getFullYear();
+    let mes = String(fechaActual.getMonth() + 1).padStart(2, '0'); // Agregar ceros si es necesario
+    let dia = String(fechaActual.getDate()).padStart(2, '0');       // Agregar ceros si es necesario
+    document.getElementById('fecha').value = `${año}-${mes}-${dia}`;
+}
+
+function eliminarFila(btn){
+let fila = btn.parentNode.parentNode;
+fila.parentNode.removeChild(fila);
+//actualizamos el contador del administrado de django, es decir restamos uno(el eliminado)
+totalForms = document.getElementById('id_items-TOTAL_FORMS')
+let numero = parseInt( totalForms.value );
+totalForms.value = parseInt(totalForms.value) - 1;
+
+}
+
+
+
+ function agregarItem(){
+  
+  //actualizamos el contador del administrado de django
+  totalForms = document.getElementById('id_items-TOTAL_FORMS')
+  let numero = parseInt( totalForms.value );
+  totalForms.value = parseInt(totalForms.value) + 1;
+  
+ //seleccionamos la fila base
+ let filaBase= document.querySelector('#tablaItems tbody tr')
+
+ if(filaBase){
+  //clonamos la fila base
+  let nuevaFila = filaBase.cloneNode(true);
+  //obtenemos el input de la fila y limpiamos el input
+  let input = nuevaFila.querySelectorAll('input');
+  input.value ='1';
+
+  //obtenemos el select, no lo limpiamos por que tiene los datos que necesitamos
+  let select = nuevaFila.querySelector('select');
+  //cambiamos los nombres
+  select.name=`items-${numero}-insumo`
+  input.name=`items-${numero}-cantidad`
+
+
+  let tabla = document.getElementById('tablaItems').getElementsByTagName('tbody')[0];
+  tabla.appendChild(nuevaFila);
+ }
+  
+ }
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

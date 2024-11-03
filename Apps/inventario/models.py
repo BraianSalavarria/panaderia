@@ -1,3 +1,5 @@
+
+
 from django.db import models
 from Apps.empleados.models import Empleado
 
@@ -11,6 +13,9 @@ class Proveedor(models.Model):
     def __str__(self):
         return f'{self.nombre} - {self.apellido} - {self.empresa}'
 
+    class Meta:
+        ordering = ['id']
+
 
 class Insumo (models.Model):
 
@@ -21,39 +26,54 @@ class Insumo (models.Model):
     def __str__(self):
         return f'{self.nombre},{self.cantidad}'
 
+    class Meta:
+        ordering = ['id']
+
 
 class Pedido (models.Model):
 
-    nro_pedido = models.CharField(max_length=20, unique=True)
+    empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE, related_name='pedidos_realizados')
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
+    nro_pedido = models.CharField(max_length=15, unique=True)
     fecha = models.DateField(auto_now_add=True)
-    proveedor = models.ManyToManyField(Proveedor)
-    observaciones =  models.TextField(blank=True, null=True)
+    observaciones =  models.CharField(blank=True, null=True)
 
 
     def __str__(self):
         return f'{self.nro_pedido},{self.fecha}'
 
+    class Meta:
+        ordering = ['id']
+
+
+class ItemPedido(models.Model):
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='items')
+    insumo = models.ForeignKey(Insumo, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField()
+
+
 
 class PedidoRecibido (models.Model):
 
     fecha = models.DateField(auto_now_add=True)
-    nro_comprobante = models.CharField(max_length=10, unique=True)
-    total = models.DecimalField(max_digits=10, decimal_places=2, blank=False, null=False)
+    nro_comprobante = models.CharField(max_length=15, unique=True)
+    nro_pedido = models.CharField(max_length=15,unique=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
     conformidad = models.BooleanField(default=True)
     observaciones = models.TextField(blank=True,null=True)
     empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE, related_name='pedidos_recibidos')
-    proveedor = models.ManyToManyField(Proveedor)
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.nro_comprobante},{self.fecha},{self.proveedor}'
 
+    class Meta:
+        ordering = ['id']
 
-class ItemPedido(models.Model):
-    pedido = models.ForeignKey(Pedido,on_delete=models.CASCADE,related_name='items')
-    insumo = models.ForeignKey(Insumo, on_delete=models.CASCADE)
-    cantidad = models.PositiveIntegerField()
 
 class ItemPedidoRecicido(models.Model):
-    pedido_recivido = models.ForeignKey(PedidoRecibido, on_delete=models.CASCADE,related_name='items')
+    pedido_recibido = models.ForeignKey(PedidoRecibido, on_delete=models.CASCADE,related_name='items')
     insumo = models.ForeignKey(Insumo, on_delete=models.CASCADE)
     cantidad = models.PositiveIntegerField()
+    precio_unit = models.DecimalField(max_digits=10, decimal_places=2)
+    total = models.DecimalField(max_digits=10, decimal_places=2)

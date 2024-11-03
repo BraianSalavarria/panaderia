@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Empleado(models.Model):
     cuil = models.CharField(max_length=12, unique=True)
@@ -12,6 +13,7 @@ class Empleado(models.Model):
     dpto = models.CharField(max_length=200)
     fecha_nacimiento = models.DateField(blank=False,null=False)
     fecha_ingreso = models.DateField(blank=False,null=False)
+    usuario = models.OneToOneField(User,on_delete=models.SET_NULL,null=True,blank=True) #ASOCIAMOS UN USUARIO AL EMPLEADO
 
     def __str__(self):
-        return f'{ {self.nombre},{self.apellido} }'
+        return f' {self.nombre} {self.apellido} '

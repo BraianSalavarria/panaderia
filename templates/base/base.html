@@ -40,12 +40,13 @@
           </button>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-center">
-          <h5 class="mb-0 font-weight-medium d-none d-lg-flex">Bienvenido al dashboard Usuario!</h5>
+          <h5 class="mb-0 font-weight-medium d-none d-lg-flex">Bienvenido {{user.username}}!</h5>
           <ul class="navbar-nav navbar-nav-right">
-            <form class="search-form d-none d-md-block" action="#">
-              <i class="icon-magnifier"></i>
-              <input type="search" class="form-control" placeholder="Search Here" title="Search here">
-            </form>
+          {% if  user.is_superuser == True %}
+            <a class= "btn btn-outline-warning btn-sm" href="http://127.0.0.1:8000/admin/"> Administracion </a>
+          {% endif %}
+            <a class= "btn btn-outline-primary btn-sm" href="{% url 'usuario:logout' %}"> Cerrar Sesión </a>
+            
           </ul>
 
           <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
@@ -63,6 +64,7 @@
               <a class="nav-link navbar-brand brand-logo-mini" href="base.html"><img src="{% static 'assets/images/logo-mini.ico' %}" style=" max-height: 35px;height: auto;width: auto; margin-top: 12px;" alt="logo" /></a>
             </li>
 
+          {% if user.username == 'CVP' or user.is_superuser == True %}
             <li class="nav-item nav-category"><span class="nav-link mt-3">Panaderia</span></li>
             <li class="nav-item">
               <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
@@ -76,7 +78,10 @@
                 </ul>
               </div>
             </li>
-            
+            {% endif %}
+
+     {% if user.username == 'CRH' or user.is_superuser == True %}
+
             <li class="nav-item nav-category"><span class="nav-link mt-3">Administrar</span></li>
             <li class="nav-item">
               <a class="nav-link" data-bs-toggle="collapse" href="#forms" aria-expanded="false" aria-controls="forms">
@@ -110,11 +115,14 @@
               <div class="collapse" id="tables">
                 <ul class="nav flex-column sub-menu">
                   <li class="nav-item"> <a class="nav-link" href="{% url 'empleados:lista_empleados' %}">Registrar/Eliminar</a></li>
-                  
+
                 </ul>
               </div>
             </li>
 
+        {% endif %}
+
+      {% if user.username == 'CST' or user.is_superuser == True %}
             <li class="nav-item nav-category"><span class="nav-link mt-3">Stock</span></li>
             <li class="nav-item">
               <a class="nav-link" data-bs-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
@@ -123,13 +131,15 @@
               </a>
               <div class="collapse" id="icons">
                 <ul class="nav flex-column sub-menu">
-                  <li class="nav-item"> <a class="nav-link" href="./agregarPedido.html">Regitrar Pedido</a></li>
-                  <li class="nav-item"> <a class="nav-link" href="./controlaPedido.html">Controlar Pedido</a></li>
-                  <li class="nav-item"> <a class="nav-link" href="./stock.html">Stock Disponible</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'inventario:registrar_pedido' %}">Realizar Pedido</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'inventario:lista_pedidos' %}">Controlar Pedido</a></li>
+                   <li class="nav-item"> <a class="nav-link" href="{% url 'inventario:todos_los_pedidos' %}">Lista de Pedidos</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'inventario:stock_disponible' %}">Administrar Stock</a></li>
                 </ul>
               </div>
             </li>
-
+         {% endif %}
+        {% if user.username == 'CVP' or user.is_superuser == True %}
             <li class="nav-item nav-category"><span class="nav-link">Comercio</span></li>
             <li class="nav-item">
               <a class="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
@@ -139,14 +149,14 @@
               <div class="collapse" id="auth">
                 <ul class="nav flex-column sub-menu">
                   <li class="nav-item"> <a class="nav-link" href="{% url 'ventas:registrar_venta' %}"> Registrar Venta </a></li>
-                  <li class="nav-item"> <a class="nav-link" href="./ventasRealizadas.html"> Ventas Realizadas</a></li>
-                  <li class="nav-item"> <a class="nav-link" href="./comprobantes.html"> Comprobantes</a></li>
-                  <li class="nav-item"> <a class="nav-link" href="./estadisticas.html"> Estadisticas de Venta</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'ventas:lista_ventas' %}"> Ventas Realizadas</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="#"> Estadisticas de Venta</a></li>
                 </ul>
               </div>
             </li>
 
           </ul>
+          {% endif %}
         </nav>
         <!-- partial -->
         <div class="main-panel">

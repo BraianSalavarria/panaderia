@@ -1,3 +1,7 @@
 from django.contrib import admin
+from Apps.inventario.models import Proveedor,Insumo,Pedido,PedidoRecibido
 
-# Register your models here.
+admin.site.register(Proveedor)
+admin.site.register(Insumo)
+admin.site.register(Pedido)
+admin.site.register(PedidoRecibido)

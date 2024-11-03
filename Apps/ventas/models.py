@@ -1,4 +1,5 @@
 from django.db import models
+from Apps.empleados.models import Empleado
 
 
 
@@ -47,12 +48,11 @@ class Venta(models.Model):
     ]
     fecha = models.DateField(auto_now=True)
     nro_comprobante = models.CharField(max_length=15 ,unique=True)
-    #multiple opciones
+    
     comprobante_tipo = models.CharField(max_length=10,choices=TIPOS_COMPROBANTE)
     venta_tipo = models.CharField(max_length=7,choices=TIPOS_VENTA)
     pago_tipo = models.CharField(max_length=18,choices=TIPOS_PAGO)
-    #--------------------------------------------------------------------------------------------------
-    #empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE, related_name='ventas_realizadas')
+    empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE, related_name='ventas_realizadas')
     observaciones = models.TextField(blank=True,null=True)
     total = models.DecimalField(max_digits=10, decimal_places=2)
 

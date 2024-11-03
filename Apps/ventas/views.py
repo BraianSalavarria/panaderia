@@ -1,20 +1,34 @@
 from decimal import Decimal
+
+from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.template.context_processors import request
 from django.utils.datastructures import MultiValueDictKeyError
 
 from Apps.ventas.forms import ItemsVentaFormSet, VentaForm
-from Apps.ventas.models import Categoria, Producto, Mayorista
+from Apps.ventas.models import Categoria, Producto, Mayorista, Venta
+from ..empleados.models import Empleado
 
 
+#---------------------------------Categorias----------------------------------------------------------------------
+
+
+
+@login_required(login_url='usuario:login')
+@permission_required('ventas.view_categoria', raise_exception=True)
 def lista_de_categorias(request):
     categorias = Categoria.objects.all()
     return render(request,'ventas/administrarCategorias.html',{'categorias':categorias})
 
+
+
+@login_required(login_url='usuario:login')
+@permission_required('ventas.add_categoria', raise_exception=True)
 def agregar_categoria(request):
 
     if request.method == 'POST':
@@ -30,6 +44,10 @@ def agregar_categoria(request):
 
     return redirect(to='ventas:lista_categorias')
 
+
+
+@login_required(login_url='usuario:login')
+@permission_required('ventas.delete_categoria', raise_exception=True)
 def eliminar_categoria(request, id):
 
         categoria_eliminada = get_object_or_404(Categoria,id=id)
@@ -38,6 +56,9 @@ def eliminar_categoria(request, id):
 
         return redirect(to='ventas:lista_categorias')
 
+
+@login_required(login_url='usuario:login')
+@permission_required('ventas.change_categoria', raise_exception=True)
 def editar_categoria(request):
 
     if request.method == 'POST':
@@ -50,14 +71,17 @@ def editar_categoria(request):
 
         return redirect(to='ventas:lista_categorias')
 
+#------------------------------------------- PRODUCTOS ---------------------------------------------------------------------------
 
-
+@login_required(login_url='usuario:login')
+@permission_required('ventas.view_producto', raise_exception=True)
 def lista_productos(request):
     productos = Producto.objects.all()
     categorias = Categoria.objects.all()
     return render(request,'ventas/administrarProductos.html',{'productos':productos, 'categorias':categorias})
 
-
+@login_required(login_url='usuario:login')
+@permission_required('ventas.add_producto', raise_exception=True)
 def agregar_producto(request):
 
     if request.method == 'POST':
@@ -82,6 +106,11 @@ def agregar_producto(request):
 
     return redirect(to='ventas:lista_productos')
 
+
+
+@login_required(login_url='usuario:login')
+@permission_required('ventas.change_producto', raise_exception=True)
+
 def editar_producto(request):
 
     if request.method == 'POST':
@@ -105,6 +134,9 @@ def editar_producto(request):
 
     return redirect(to='ventas:lista_productos')
 
+
+@login_required(login_url='usuario:login')
+@permission_required('ventas.delete_producto', raise_exception=True)
 def eliminar_producto(request,id):
     producto = get_object_or_404(Producto,id = id)
     producto.delete()
@@ -112,12 +144,18 @@ def eliminar_producto(request,id):
     return redirect(to='ventas:lista_productos')
 
 
+#------------------------------------------ MAYORISTAS
+@login_required(login_url='usuario:login')
+@permission_required('ventas.view_mayorista', raise_exception=True)
 def lista_mayoristas(request):
 
     mayoristas = Mayorista.objects.all()
     return render(request,'ventas/administrarMayoristas.html',{'mayoristas':mayoristas})
 
 
+
+@login_required(login_url='usuario:login')
+@permission_required('ventas.add_mayorista', raise_exception=True)
 def agregar_mayorista(request):
 
     if request.method == 'POST':
@@ -135,6 +173,10 @@ def agregar_mayorista(request):
 
     return redirect(to='ventas:lista_mayoristas')
 
+
+
+@login_required(login_url='usuario:login')
+@permission_required('ventas.change_mayorista', raise_exception=True)
 def editar_mayorista(request):
 
     if request.method == 'POST':
@@ -157,6 +199,9 @@ def editar_mayorista(request):
     return redirect(to='ventas:lista_mayoristas')
 
 
+
+@login_required(login_url='usuario:login')
+@permission_required('ventas.delete_mayorista', raise_exception=True)
 def eliminar_mayorista (request, id):
     mayorista = get_object_or_404(Mayorista,id = id)
     mayorista.delete()
@@ -164,6 +209,9 @@ def eliminar_mayorista (request, id):
     return redirect(to='ventas:lista_mayoristas')
 
 
+#------------------------------------------------- VENTAS -----------------------------------------------------------
+@login_required(login_url='usuario:login')
+@permission_required('ventas.view_venta', raise_exception=True)
 def registrar_venta(request):
     categorias = Categoria.objects.all()
     venta_form = VentaForm()
@@ -172,7 +220,8 @@ def registrar_venta(request):
     return render(request,'ventas/administrarVentas.html',{'categorias':categorias,'form':venta_form,'formset':formset})
 
 
-
+@login_required(login_url='usuario:login')
+@permission_required('ventas.add_venta', raise_exception=True)
 def crear_item_venta(request):
     if request.method == 'POST':
         form = VentaForm(request.POST)
@@ -200,6 +249,12 @@ def crear_item_venta(request):
             else:
                 # Guardamos los cambios si no hay errores de stock
                 venta.total = total
+
+                #obtenemos al empleado
+                usuario = request.user
+                empleado= Empleado.objects.get(usuario=usuario)
+                venta.empleado=empleado
+
                 venta.save()
                 formset.instance = venta  # Asignamos la instancia de venta al formset
                 formset.save()
@@ -228,6 +283,8 @@ def crear_item_venta(request):
 from django.http import JsonResponse
 from .models import Producto  # Asegúrate de tener un modelo Producto que contenga los precios
 
+
+#funcionabilidad extra
 def obtener_precio_producto(request):
     producto_id = request.GET.get('producto_id')
     if producto_id:
@@ -238,3 +295,12 @@ def obtener_precio_producto(request):
         except Producto.DoesNotExist:
             return JsonResponse({'error': 'Producto no encontrado'}, status=404)
     return JsonResponse({'error': 'ID de producto no proporcionado'}, status=400)
+
+def lista_ventas(request):
+    ventas = Venta.objects.all()
+    return render(request,'ventas/ventasRealizadas.html',{'ventas':ventas})
+
+def imprimir_venta(request):
+
+    messages.success(request, 'FUNCIONAAAAA')
+    return redirect(to='ventas:lista_ventas')

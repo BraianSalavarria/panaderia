@@ -1,0 +1,308 @@
+{% extends 'base/base.html' %}
+{%block title%} Todos los Pedidos {% endblock %}
+{% block contenido %}
+
+<div class="card p-3" style="border-radius: 10px;">
+    <p class="card-title mb-4">Todos los Pedidos</p>
+<p class="card-title mx-auto"> Pedidos Realizados </p>
+
+
+
+                 <div class="col-md-6 me-2">
+                              {% if messages %}
+
+                                  {% for message in messages %}
+
+                                      {% if 'success' in message.tags %}
+                                         <div  class=" alert alert-success d-flex align-items-center" role="alert">
+                                              <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                                                 <div>
+                                                             {{message}}
+                                                 </div>
+                                         </div>
+                                         {% elif 'error' in message.tags %}
+                                         <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                                 <div>
+                                                             {{message}}
+                                                 </div>
+                                         </div>
+                                      {% endif %}
+
+                                  {% endfor %}
+
+                              {% endif %}
+                             </div>
+
+
+
+
+        <div class="row align-items-start mt-4">
+        <!--tabla  de pedidos -->
+        <div class="col-md-6">
+            <div class="table-responsive mt-1 mb-4" style="height: 680px; width: 100% overflow-y: auto;">
+                <table class="table table-hover mb-4" id="tablaContenido">
+                    <thead>
+                        <tr>
+                            <th>Nro Pedido</th>
+                            <th>Fecha</th>
+                            <th>Empleado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pedido in pedidos %}
+                        <tr>
+                            <td>{{pedido.nro_pedido}}</td>
+                            <td>{{pedido.fecha}}</td>
+                            <td>{{pedido.empleado}}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm me-2" onclick="detallesPedido({{pedido.id}})">detalles</button>
+                                <a class="btn btn-danger btn-sm" href="{% url 'inventario:eliminar_pedido' pedido.id %}">borrar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+                                                            <!-- detalles del pedido -->
+        <div class="col-md-6 pt-2 " style="background-color: #FFF9CA; border-radius: 10px;">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label><strong>Fecha:</strong></label>
+                            <input type="date" id="fecha" name="fecha" class="form-control form-control-sm" disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label><strong>Nro Pedido:</strong></label>
+                            <input type="text" id="nro_pedido" name="nro_pedido" class="form-control form-control-sm bg-white" >
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label><strong>Observaciones</strong></label>
+                            <textarea class="form-control form-control-sm bg-white" cols="8" rows="5" id="observaciones" name="observaciones"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label><strong>Proveedor:</strong></label>
+                            <input  type="text" class="form-control form-control-sm text-black bg-white" id="proveedor">
+                        </div>
+                    </div>
+                </div>
+                                                         <!-- tabla donde se detallan los insumos -->
+            <hr class="col-md-12 mb-2">
+             <div class="col-md-12">
+                <div class="table-responsive mt-1 mb-4" style="height: 400px;  overflow-y: auto;">
+                      <table class="table table-hover mb-4" id="tablaItems" >
+                        <thead>
+                          <tr>
+                            <th><strong>Insumo</strong></th>
+                            <th><strong>Cantidad</strong></th>
+                            <th></th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                      </table>
+                </div>
+              </div>
+        </div>
+
+    </div>
+        <!-------------------------------------- DETALLES DE PEDIDOS REALIZADOS  ---------------------------------------------------------->
+<hr class="col-md-12 mb-2">
+
+    <p class="card-title mx-auto mb-4"> Pedidos Recibidos </p>
+
+<div class="row align-items-start mt-4">
+            <div class="col-md-6">
+                <div class="table-responsive mt-1 mb-4" style="height: 680px;  overflow-y: auto;">
+                      <table class="table table-hover mb-4" id="tablaPedidosRecibidos" >
+                        <thead>
+                          <tr>
+                            <th><strong>Nro Comprobante</strong></th>
+                            <th><strong>Nro Pedido</strong></th>
+                            <th><strong>Fecha</strong></th>
+                            <th><strong>Empleado</strong></th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                                {% for pedido_recibido in pedidos_recibidos %}
+                               <tr>
+                                   <td>{{pedido_recibido.nro_comprobante}}</td>
+                                   <td>{{pedido_recibido.nro_pedido}}</td>
+                                   <td>{{pedido_recibido.fecha}}</td>
+                                   <td>{{pedido_recibido.empleado}}</td>
+                                   <td>
+                                       <button type="button" class="btn btn-primary btn-sm me-2" onclick="detallesPedidoRecibido({{pedido_recibido.id}})">detalles</button>
+                                        <a class="btn btn-danger btn-sm" href="{% url 'inventario:eliminar_pedido_recibido' pedido_recibido.id %}">borrar</a>
+                                   </td>
+
+                               </tr>
+                               {% endfor %}
+                        </tbody>
+                      </table>
+                </div>
+            </div>
+
+
+     <div class="col-md-6 p-2 "  style="background-color: #FFF9CA; border-radius: 10px;">
+
+         <div class="row">
+                    <div class="col-md-3">
+                        <label><strong>Feche de Ingreso:</strong></label>
+                        <input  type="date" class="form-control form-control-sm text-black"  id="fechaIngreso" disabled>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label><strong>Nro Comprobante:</strong></label>
+                        <input type="text" class="form-control form-control-sm bg-white text-black"  id="nro_comprobante">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label><strong>Observaciones:</strong></label>
+                        <textarea class="form-control form-control-sm bg-white text-black" cols="8" rows="5" placeholder="comentarios" id='observacionesI' ></textarea>
+                    </div>
+
+                    <div class="col-md-3 mb-4">
+                        <label><strong>Nro Pedido:</strong></label>
+                        <input type="text" class="form-control form-control-sm bg-white text-black"  id="nro_pedidoRealizado">
+                    </div>
+
+            </div>
+                    <div class="row align-items-center mb-4">
+
+                        <div class="col-md-6 me-5">
+                            <label><strong>Proveedor:</strong></label>
+                            <input type="text" class="form-control form-control-sm bg-white text-black" id="proveedorIngreso">
+                        </div>
+
+                        <div class="col ms-5">
+                            <label><strong>Conformidad:</strong></label>
+                            <input type="checkbox" class="form-checkbox "  id="conformidad" checked>
+                        </div>
+
+                    </div>
+
+                <hr class="col-md-12 mb-4">
+
+            <div class="col-md-12">
+                <div class="table-responsive mt-1 mb-4" style="height: 400px;  overflow-y: auto;">
+                      <table class="table table-hover mb-4" id="tablaItemsRecibidos" >
+                        <thead>
+                          <tr>
+                            <th><strong>Insumo</strong></th>
+                            <th><strong>Cantidad</strong></th>
+                            <th><strong>Precio Unit</strong></th>
+                            <th><strong>Total</strong></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                      </table>
+                </div>
+              </div>
+                 <div class="row justify-content-end col-md-12">
+                    <div class="col-md-4 mt-2 d-flex align-items-center">
+                        <p class="mb-0 me-2"><strong>Total:</strong></p>
+                        <input type="text" id="totalFactura" name="totalFactura" class=" form-control form-control-sm text-black  bg-white" required>
+                    </div>
+                </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+<script>
+
+        function detallesPedido(pedidoId) {
+    // Realizar la solicitud AJAX
+    fetch(`/inventario/detalles-pedido/${pedidoId}`)
+        .then(response => response.json())
+        .then(data => {
+            // Llenar los campos del formulario con los datos recibidos
+            document.getElementById('nro_pedido').value = data.nro_pedido;
+            document.getElementById('fecha').value = data.fecha;
+            document.getElementById('observaciones').value = data.observaciones;
+            document.getElementById('proveedor').value = data.proveedor;
+
+            // Llenar la tabla de items
+            const itemsTableBody = document.querySelector('#tablaItems tbody');
+            itemsTableBody.innerHTML = ''; // Limpiar la tabla actual
+            data.items.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.insumo__nombre}</td>
+                    <td>${item.cantidad}</td>
+
+                `;
+                itemsTableBody.appendChild(row);
+            });
+        })
+        .catch(error => console.error('Error al cargar los detalles del pedido:', error));
+}
+
+
+    function detallesPedidoRecibido(pedidoId) {
+    // Realizar la solicitud AJAX
+    fetch(`/inventario/detalles-pedidos-recibidos/${pedidoId}`)
+        .then(response => response.json())
+        .then(data => {
+            // Llenar los campos del formulario con los datos recibidos
+
+            document.getElementById('nro_comprobante').value = data.nro_comprobante;
+            document.getElementById('nro_pedidoRealizado').value = data.nro_pedido;
+            document.getElementById('fechaIngreso').value = data.fecha;
+            document.getElementById('observacionesI').value = data.observaciones;
+            document.getElementById('proveedorIngreso').value = data.proveedor;
+            document.getElementById('conformidad').value = data.conformidad;
+            document.getElementById('totalFactura').value = data.total;
+
+
+
+            // Llenar la tabla de items
+            const itemsTableBody = document.querySelector('#tablaItemsRecibidos tbody');
+            itemsTableBody.innerHTML = ''; // Limpiar la tabla actual
+            data.items.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.insumo__nombre}</td>
+                    <td>${item.cantidad}</td>
+                    <td>${item.precio_unit}</td>
+                    <td>${item.total}</td>
+                `;
+                itemsTableBody.appendChild(row);
+            });
+        })
+        .catch(error => console.error('Error al cargar los detalles del pedido:', error));
+}
+
+
+
+
+</script>
+
+    {% endblock %}

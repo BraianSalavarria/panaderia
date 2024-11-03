@@ -1,9 +1,10 @@
+from tkinter.font import names
 
 from django.urls import path
 from Apps.ventas.views import (lista_de_categorias, agregar_categoria, eliminar_categoria, editar_categoria,
                                lista_productos, agregar_producto, editar_producto, eliminar_producto, agregar_mayorista,
                                lista_mayoristas, editar_mayorista, eliminar_mayorista,registrar_venta, crear_item_venta,
-                               obtener_precio_producto)
+                               obtener_precio_producto,lista_ventas,imprimir_venta)
 
 app_name = 'ventas'
 
@@ -24,5 +25,7 @@ urlpatterns = [
     path('registrar-venta',registrar_venta,name='registrar_venta'),
     path('crear-item-venta',crear_item_venta,name='crear_item_venta'),
     path('obtener-precio-producto/', obtener_precio_producto, name='obtener_precio_producto'),
+    path('lista-ventas',lista_ventas,name='lista_ventas'),
+    path('imprimir-venta',imprimir_venta,name='imprimir_venta')
     
 ]

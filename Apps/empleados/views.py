@@ -1,22 +1,20 @@
+from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from Apps.empleados.forms import EmpleadoForm
 from Apps.empleados.models import Empleado
 
 
-# Create your views here.
-def home(request):
-    return render(request,'base/home.html')
-
-def log(request):
-    return render(request,'base/login.html')
+@login_required(login_url='usuario:login')
+@permission_required('empleados.view_empleado', raise_exception=True)
 
 def lista_empleados(request):
     empleados = Empleado.objects.all()
     empleado_form = EmpleadoForm()
     return render(request,'empleados/administrarEmpleados.html',{'form':empleado_form,'empleados':empleados})
 
-
+@login_required(login_url='usuario:login')
+@permission_required('empleados.add_empleado', raise_exception=True)
 def agregar_empleado(request):
     empleados = Empleado.objects.all()
 
@@ -34,6 +32,9 @@ def agregar_empleado(request):
                 'errors': empleado_form.errors
             })
 
+
+@login_required(login_url='usuario:login')
+@permission_required('empleados.change_empleado', raise_exception=True)
 def editar_empleado(request):
 
     if request.method == 'POST':
@@ -68,7 +69,8 @@ def editar_empleado(request):
 
     return redirect(to='empleados:lista_empleados')
 
-
+@login_required(login_url='usuario:login')
+@permission_required('empleados.delete_empleado', raise_exception=True)
 def eliminar_empleado(request,id):
 
    empleado_eliminado = get_object_or_404(Empleado,id = id)

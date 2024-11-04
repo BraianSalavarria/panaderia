@@ -4,9 +4,17 @@
 
 <div class="card p-3" style="border-radius: 10px;">
     <p class="card-title mb-4">Todos los Pedidos</p>
-<p class="card-title mx-auto"> Pedidos Realizados </p>
+<p class="card-title mx-auto"> Pedidos Realizados y Controlados </p>
 
 
+
+    <div class="col-md-4 mt-4">
+          <div class="form-group">
+            <i class="icon-magnifier"></i>
+              <label for="buscarPedido">Buscar:</label>
+              <input type="text" class="form-control form-control-sm " id="buscarPedido"  placeholder="nro de pedido" required oninput="filtrarTablaPedidos()" >
+          </div>
+    </div>
 
                  <div class="col-md-6 me-2">
                               {% if messages %}
@@ -41,12 +49,12 @@
         <!--tabla  de pedidos -->
         <div class="col-md-6">
             <div class="table-responsive mt-1 mb-4" style="height: 680px; width: 100% overflow-y: auto;">
-                <table class="table table-hover mb-4" id="tablaContenido">
+                <table class="table table-hover mb-4" id="tablaPedidos">
                     <thead>
                         <tr>
-                            <th>Nro Pedido</th>
-                            <th>Fecha</th>
-                            <th>Empleado</th>
+                            <th><strong>Nro Pedido</strong></th>
+                            <th><strong>Fecha</strong></th>
+                            <th><strong>Empleado</strong></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -54,7 +62,7 @@
                         {% for pedido in pedidos %}
                         <tr>
                             <td>{{pedido.nro_pedido}}</td>
-                            <td>{{pedido.fecha}}</td>
+                            <td>{{pedido.fecha|date:"d/m/y"}}</td>
                             <td>{{pedido.empleado}}</td>
                             <td>
                                 <button type="button" class="btn btn-primary btn-sm me-2" onclick="detallesPedido({{pedido.id}})">detalles</button>
@@ -104,8 +112,6 @@
                           <tr>
                             <th><strong>Insumo</strong></th>
                             <th><strong>Cantidad</strong></th>
-                            <th></th>
-                            <th></th>
                           </tr>
                         </thead>
                         <tbody>
@@ -120,7 +126,16 @@
         <!-------------------------------------- DETALLES DE PEDIDOS REALIZADOS  ---------------------------------------------------------->
 <hr class="col-md-12 mb-2">
 
-    <p class="card-title mx-auto mb-4"> Pedidos Recibidos </p>
+    <p class="card-title mx-auto mb-2 mt-3"> Pedidos Recibidos </p>
+
+    <div class="col-md-4 mt-4">
+          <div class="form-group">
+            <i class="icon-magnifier"></i>
+              <label for="buscarPedidoRecibido">Buscar:</label>
+              <input type="text" class="form-control form-control-sm " id="buscarPedidoRecibido"  placeholder="nro de pedido" required oninput="filtrarTablaPedidosRecibidos()" >
+          </div>
+    </div>
+
 
 <div class="row align-items-start mt-4">
             <div class="col-md-6">
@@ -140,7 +155,7 @@
                                <tr>
                                    <td>{{pedido_recibido.nro_comprobante}}</td>
                                    <td>{{pedido_recibido.nro_pedido}}</td>
-                                   <td>{{pedido_recibido.fecha}}</td>
+                                   <td>{{pedido_recibido.fecha|date:"d/m/y"}}</td>
                                    <td>{{pedido_recibido.empleado}}</td>
                                    <td>
                                        <button type="button" class="btn btn-primary btn-sm me-2" onclick="detallesPedidoRecibido({{pedido_recibido.id}})">detalles</button>

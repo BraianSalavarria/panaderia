@@ -1,56 +1,25 @@
 {% extends "base/base.html" %}
 {% block title %} Lista de Ventas {% endblock %}
 {% block contenido %}
-
+{% load static %}
 
 
 <div class="card p-3" style="border-radius: 10px;">
               <p class="card-title">Lista de Ventas</p>
 
 
-    <div class="col-md-6">
-                {% if messages %}
-                     {% for message in messages %}
-                         {% if 'success' in message.tags %}
-                            <div  class=" alert alert-success d-flex align-items-center" role="alert">
-                                 <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
-                                    <div>
-                                                {{message}}
-                                    </div>
-                            </div>
-                            {% elif 'error' in message.tags %}
-                            <div class="alert alert-danger d-flex align-items-center" role="alert">
-                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                                    <div>
-                                                {{message}}
-                                    </div>
-                            </div>
-                         {% endif %}
-                     {% endfor %}
-                {% endif %}
-            </div>
+    <div class="col-md-12">
 
-
-        <!--Tabla para editar o eliminar una categoria-->
-
-        <div class="col-md-4 mt-4">
-          <div class="form-group">
-            <i class="icon-magnifier"></i>
-              <label>Buscar:</label>
-              <input type="text" class="form-control  form-control-sm " id="buscarVenta" name="buscarVenta" placeholder=""  >
-          </div>
-        </div>
-
-
-        <div class="col-md-6">
+        <!--Tabla de listado de ventas-->
+        <div class="col-md-10">
         <div class="table-responsive mt-1 mb-4" style="max-height: 400px; overflow-y: auto;">
           <table class="table table-hover mb-4" id="tablaContenido" >
             <thead>
               <tr>
-                <th>Nro Comprobante</th>
-                <th>Fecha</th>
-                <th>Total</th>
-                <th>Empleado</th>
+                <th><strong>Nro Comprobante</strong></th>
+                <th><strong>Fecha</strong></th>
+                <th><strong>Total</strong></th>
+                <th><strong>Empleado</strong></th>
                 <th></th>
               </tr>
             </thead>
@@ -58,10 +27,10 @@
                 {% for venta in ventas %}
               <tr>
                 <td>{{venta.nro_comprobante}}</td>
-                <td>{{venta.fecha}}</td>
+                <td>{{venta.fecha|date:"d/m/y"}}</td>
                 <td>{{venta.total}}</td>
                 <td>{{venta.empleado}}</td>
-                  <td>  <a class="btn btn-primary btn-sm" href="{% url 'ventas:imprimir_venta' %}"> descagar</a>   </td>
+                  <td>  <a  href="{% url 'ventas:imprimir_venta' venta.id %}"> <img src="{% static 'assets/icons/descarga.png' %}"> </a>   </td>
               </tr>
                 {% endfor %}
             </tbody>
@@ -69,5 +38,11 @@
         </div>
         </div>
   </div>
+
+
+
+</div>
+
+
 
 {% endblock %}

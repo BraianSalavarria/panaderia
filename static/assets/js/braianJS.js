@@ -70,6 +70,73 @@ function convertirFecha(fechaStr) {
     });
 }
 
+function filtrarTablaMayoristas(){
+    document.getElementById("buscarMayorista").addEventListener("input", function() {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll("#tablaMayorista tbody tr");
+
+        rows.forEach(row => {
+            const descripcion = row.cells[1].textContent.toLowerCase();
+            if (descripcion.includes(filter)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+}
+
+function filtrarTablaProveedores(){
+    document.getElementById("buscarProveedor").addEventListener("input", function() {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll("#tablaProveedores tbody tr");
+
+        rows.forEach(row => {
+            const descripcion = row.cells[0].textContent.toLowerCase();
+            if (descripcion.includes(filter)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+}
+
+function filtrarTablaEmpleados(){
+    document.getElementById("buscarEmpleado").addEventListener("input", function() {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll("#tablaEmpleados tbody tr");
+
+        rows.forEach(row => {
+            const descripcion = row.cells[1].textContent.toLowerCase();
+            if (descripcion.includes(filter)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+}
+
+function filtrarTablaInsumos(){
+    document.getElementById("buscarInsumo").addEventListener("input", function() {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll("#tablaInsumos tbody tr");
+
+        rows.forEach(row => {
+            const descripcion = row.cells[0].textContent.toLowerCase();
+            if (descripcion.includes(filter)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+}
+
+
+
+
 function modalEditarProducto(id_producto,descripcion,cantidad,id_categoria,precio) {
         // Asignar los valores al modal
             document.getElementById('id_producto').value = id_producto;
@@ -91,6 +158,39 @@ function modalEditarProducto(id_producto,descripcion,cantidad,id_categoria,preci
         
             rows.forEach(row => {
                 const descripcion = row.cells[1].textContent.toLowerCase();
+                if (descripcion.includes(filter)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+    }
+
+    function filtrarTablaPedidos(){
+        document.getElementById("buscarPedido").addEventListener("input", function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll("#tablaPedidos tbody tr");
+
+            rows.forEach(row => {
+                const descripcion = row.cells[0].textContent.toLowerCase();
+                if (descripcion.includes(filter)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+    }
+
+
+    function filtrarTablaPedidosRecibidos(){
+        document.getElementById("buscarPedidoRecibido").addEventListener("input", function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll("#tablaPedidosRecibidos tbody tr");
+
+            rows.forEach(row => {
+                const descripcion = row.cells[0].textContent.toLowerCase();
                 if (descripcion.includes(filter)) {
                     row.style.display = "";
                 } else {

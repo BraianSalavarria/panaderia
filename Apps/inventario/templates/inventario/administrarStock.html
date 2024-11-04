@@ -63,18 +63,18 @@
         <div class="col-md-4 mt-4">
           <div class="form-group">
             <i class="icon-magnifier"></i>
-              <label for="buscarProducto">Buscar:</label>
-              <input type="text" class="form-control form-control-sm " id="buscarProducto" name="buscarProducto" placeholder="Insumo" required >
+              <label for="buscarInsumo">Buscar:</label>
+              <input type="text" class="form-control form-control-sm " id="buscarInsumo"  placeholder="Insumo" required oninput="filtrarTablaInsumos()">
           </div>
         </div>
               <div class="table-responsive mt-1 mb-3 col-md-10" style="max-height: 400px; overflow-y: auto;">
-                <table class="table table-hover mb-4" id="tablaContenido">
+                <table class="table table-hover mb-4" id="tablaInsumos">
                   <thead>
                     <tr>
-                      <th>Descripcion</th>
-                      <th>Cantidad</th>
-                      <th>Proveedor</th>
-                      <th>Asignar Proveedor</th>
+                      <th><strong>Descripcion</strong></th>
+                      <th><strong>Cantidad</strong></th>
+                      <th><strong>Proveedor</strong></th>
+                      <th><strong>Asignar Proveedor</strong></th>
                       <th></th>
                       <th></th>
                     </tr>

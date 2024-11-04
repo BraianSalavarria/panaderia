@@ -1,0 +1,59 @@
+{% extends "base/base.html" %}
+{% block title %} Estadisticas de Ventas {% endblock %}
+{% block contenido %}
+
+
+<!-- contenido -->
+    <div class="card p-3" style="border-radius: 10px;">
+        <p class="card-title mb-4">Estadisticas</p>
+
+        <!--Tabla de estadisticas -->
+        <p><strong>Empleado con mas Ventas</strong></p>
+
+        <div class="col-md-4 mt-4">
+          <div class="form-group">
+            <i class="icon-magnifier"></i>
+              <label for="buscarEmpleado">Buscar:</label>
+              <input type="text" class="form-control  form-control-sm " id="buscarEmpleado"  placeholder="nombre de empleado" required oninput="filtrarTablaEmpleados()" >
+          </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="table-responsive mt-1 mb-4" style="max-height: 400px; overflow-y: auto;">
+              <table class="table table-hover mb-4" id="tablaEmpleados" >
+                <thead>
+                      <tr>
+                        <th>Cuil</th>
+                        <th><strong>Empleado</strong></th>
+                        <th><strong>Nro de Ventas</strong></th>
+
+                      </tr>
+                </thead>
+                    <tbody>
+                            {% for empleado in empleados %}
+                          <tr>
+                                <td>{{empleado.cuil}}</td>
+                                <td><a href="{% url 'empleados:lista_empleados' %}">{{empleado}}</a></td>
+                                <td>{{empleado.nro_ventas}}</td>
+                          </tr>
+                            {% endfor %}
+                    </tbody>
+              </table>
+            </div>
+        </div>
+   </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

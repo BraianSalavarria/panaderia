@@ -65,8 +65,13 @@ class ItemVenta(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     cantidad = models.PositiveIntegerField()
 
+    @property
+    def subtotal(self):
+        return self.producto.precio * self.cantidad
+
     def __str__(self):
         return f'{self.producto} - cantidad:{self.cantidad}'
+
     class Meta:
         ordering = ["id"]
 

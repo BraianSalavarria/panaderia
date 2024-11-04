@@ -31,7 +31,7 @@ class Insumo (models.Model):
 
 
 class Pedido (models.Model):
-
+    estado = models.BooleanField(default=False)
     empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE, related_name='pedidos_realizados')
     proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
     nro_pedido = models.CharField(max_length=15, unique=True)

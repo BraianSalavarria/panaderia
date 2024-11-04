@@ -232,7 +232,7 @@ def crear_item_pedido(request):
 
 
 def lista_pedidos(request):
-    pedidos = Pedido.objects.all()
+    pedidos = Pedido.objects.filter(estado=False)
     provedores = Proveedor.objects.all()
     formset = ItemsPedidosRecibidoFormSet()
     return render(request,'inventario/controlarPedido.html',{'pedidos':pedidos, 'proveedores':provedores,'formset':formset})
@@ -276,6 +276,10 @@ def crear_item_pedido_recibido(request):
 
             nuevo_pedido_recibido.save()
 
+            #obtenemos el pedido hecho para darlo como controlado
+            pedido_echo = Pedido.objects.get(nro_pedido=request.POST['nro_pedidoRealizado'])
+            pedido_echo.estado = True
+            pedido_echo.save()
 
             # Trabajamos con los formsets
             formset = ItemsPedidosRecibidoFormSet(request.POST, instance=nuevo_pedido_recibido)
@@ -314,7 +318,7 @@ def crear_item_pedido_recibido(request):
 
 
 def todos_los_pedidos(request):
-    pedidos = Pedido.objects.all()
+    pedidos = Pedido.objects.filter(estado=True)
     pedidos_recibidos = PedidoRecibido.objects.all()
 
     return render(request,'inventario/todosLosPedidos.html',{'pedidos':pedidos,'pedidos_recibidos':pedidos_recibidos})
@@ -346,7 +350,15 @@ def detalles_pedido_recibido(request, id):
 def eliminar_pedido_recibido(request,id):
     if request.method == 'GET':
         pedido_recibido = get_object_or_404(PedidoRecibido,id=id)
+        items_pedido_recibido = ItemPedidoRecicido.objects.filter(pedido_recibido=pedido_recibido)
+
+        for item in items_pedido_recibido:
+            insumo = Insumo.objects.get(id = item.insumo.id)
+            insumo.cantidad -= item.cantidad
+            insumo.save()
+
         pedido_recibido.delete()
+
         messages.success(request,f'Pedido Ingresado Nro: "{pedido_recibido.nro_comprobante}" Eliminado Correctamene')
         return redirect(to='inventario:todos_los_pedidos')
 

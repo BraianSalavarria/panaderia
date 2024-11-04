@@ -34,7 +34,7 @@
                   <div class="form-group">
                       <div class="col-md-4">
                           <label for="informacionMayorista">Información Adicional sobre el cliente:</label>
-                          <textarea cols="25" rows="10" id="informacionMayorista" name="informacionMayorista" class="form-control" ></textarea>
+                          <textarea cols="15" rows="8" id="informacionMayorista" name="informacionMayorista" class="form-control" ></textarea>
                       </div>
                   </div>
 
@@ -76,16 +76,16 @@
           <div class="form-group">
             <i class="icon-magnifier"></i>
               <label for="buscarMayorista">Buscar:</label>
-              <input type="text" class="form-control  form-control-sm " id="buscarMayorista" name="buscarMayorista" placeholder="nombre de cliente" required >
+              <input type="text" class="form-control  form-control-sm " id="buscarMayorista" name="buscarMayorista" placeholder="nombre de cliente" required oninput="filtrarTablaMayoristas()" >
           </div>
         </div>
               <div class="table-responsive mt-1 mb-4" style="max-height: 400px; overflow-y: auto;">
-                <table class="table table-hover mb-4" id="tablaContenido">
+                <table class="table table-hover mb-4" id="tablaMayorista">
                   <thead>
                     <tr>
-                      <th>Cuil</th>
-                      <th>Nombre</th>
-                      <th>Apellido</th>
+                      <th><strong>Cuil</strong></th>
+                      <th><strong>Nombre</strong></th>
+                      <th><strong>Apellido</strong></th>
                       <th></th>
                     </tr>
                   </thead>

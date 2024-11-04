@@ -1,17 +1,15 @@
 from decimal import Decimal
-
 from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import Count
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import IntegrityError
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from django.template.context_processors import request
 from django.utils.datastructures import MultiValueDictKeyError
-
+from reportlab.pdfgen import canvas
 from Apps.ventas.forms import ItemsVentaFormSet, VentaForm
-from Apps.ventas.models import Categoria, Producto, Mayorista, Venta
+from Apps.ventas.models import Categoria, Producto, Mayorista, Venta, ItemVenta
 from ..empleados.models import Empleado
 
 
@@ -300,7 +298,115 @@ def lista_ventas(request):
     ventas = Venta.objects.all()
     return render(request,'ventas/ventasRealizadas.html',{'ventas':ventas})
 
-def imprimir_venta(request):
 
-    messages.success(request, 'FUNCIONAAAAA')
-    return redirect(to='ventas:lista_ventas')
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import Table, TableStyle
+from django.conf import settings
+import os
+from reportlab.lib.utils import ImageReader
+
+
+def imprimir_venta(request, id):
+
+    #obtenemos la venta y sus detalles
+    venta = get_object_or_404(Venta,id=id)
+    items_de_venta = ItemVenta.objects.filter(venta = venta)
+
+    #configuracion del archivo de respuesta
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="factura_{venta.nro_comprobante}_{venta.fecha}.pdf"'
+
+    #creamos un objeto canvas para dibujar en el pdf
+    c = canvas.Canvas(response, pagesize=A4)
+    ancho, alto = A4
+
+    #ruta del logo
+    logo_path = os.path.join(settings.BASE_DIR,'static/assets/images/logo.png')
+
+    #insertamos logo
+    if os.path.exists(logo_path):
+        logo = ImageReader(logo_path)
+        c.drawImage(logo,10, alto - 80, width=100, height=50, preserveAspectRatio=True, mask='auto')
+
+        #datos de la panaderia
+        nompre_panaderia = 'Panaderia El Maná'
+        direccion_panaderia = 'Dirección: Av Virgen del Valle 355 - Catamarca'
+        correo_panaderia = 'Correo: panaderiamana@gmail.com'
+        telefono_panaderia = 'Tel: 3832415161'
+        web_panaderia = 'Sitio Web: www.panaderiamana.com'
+
+        #Datos de la factura
+        tipo_comprobante = venta.comprobante_tipo
+        nro_comprobante = venta.nro_comprobante
+        fecha_factura = venta.fecha
+        tipo_venta = venta.venta_tipo
+        tipo_pago = venta.pago_tipo
+
+        #Encabezado centrado de la panaderia
+        c.setFont("Helvetica-Bold", 20)
+        titulo_ancho = c.stringWidth(nompre_panaderia, "Helvetica-Bold", 20 )
+        c.drawString((ancho - titulo_ancho) / 2, alto - 50, nompre_panaderia)
+
+        #agregar tipo de comprobante centrado debajo del titulo de la factura
+        c.setFont("Helvetica-Bold", 14)
+        comprobante_ancho = c.stringWidth(tipo_comprobante, "Helvetica-Bold", 14)
+        c.drawString((ancho - comprobante_ancho) / 2, alto - 80, tipo_comprobante)
+
+        # Información de contacto de la panaderia alineada a la izquierda
+        c.setFont("Helvetica", 10)
+        c.drawString(30, alto - 115, direccion_panaderia)
+        c.drawString(30, alto - 130, correo_panaderia)
+        c.drawString(30, alto - 145, telefono_panaderia)
+        c.drawString(30, alto - 160, web_panaderia)
+
+        # Detalles de la factura alineados a la derecha debajo del subtítulo
+        c.setFont("Helvetica", 10)
+        c.drawString(405, alto - 115, f'Fecha: {fecha_factura}')
+        c.drawString(405, alto - 130, f'Tipo de venta: {tipo_venta}')
+        c.drawString(405, alto - 145, f'Tipo de pago: {tipo_pago}')
+        c.drawString(405, alto - 160, f'Núm. Comprobante: {nro_comprobante}')
+
+        # Datos para la tabla
+        data = [["DESCRIPCIÓN", "PRECIO UNITARIO", "CANT.", "IMPORTE"]]
+        for item in items_de_venta:
+            producto_nombre = item.producto.descripcion
+            producto_precio = item.producto.precio
+            cantidad = item.cantidad
+            subtotal = item.subtotal
+            data.append([producto_nombre,f'{producto_precio}',f'{cantidad}',f'{subtotal}'])
+
+        # Crear la tabla con estilo
+        table = Table(data, colWidths=[283, 100, 50, 100])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3186BF')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
+            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ]))
+
+        # Establecer posición de la tabla
+        table.wrapOn(c, 30, alto - 250)
+        table.drawOn(c, 30, alto - 250)
+
+
+        #total debajo de la tabla
+        y_pos_totals = alto - 300 - len(items_de_venta) * 20
+
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(490, y_pos_totals - 40, 'Total:')
+        c.drawString(520, y_pos_totals - 40, f'{venta.total}')
+
+        # Guardar y cerrar el archivo
+        c.showPage()
+        c.save()
+
+    return response
+
+def estadisticas(request):
+    empleados = Empleado.objects.annotate(nro_ventas=Count('ventas_realizadas')).order_by('-nro_ventas')
+
+    return render(request,'ventas/estadisticas.html',{'empleados':empleados})

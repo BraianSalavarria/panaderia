@@ -4,7 +4,7 @@ from django.urls import path
 from Apps.ventas.views import (lista_de_categorias, agregar_categoria, eliminar_categoria, editar_categoria,
                                lista_productos, agregar_producto, editar_producto, eliminar_producto, agregar_mayorista,
                                lista_mayoristas, editar_mayorista, eliminar_mayorista,registrar_venta, crear_item_venta,
-                               obtener_precio_producto,lista_ventas,imprimir_venta, estadisticas)
+                               obtener_precio_producto,lista_ventas,imprimir_venta, estadisticas, eliminar_venta)
 
 app_name = 'ventas'
 
@@ -28,6 +28,7 @@ urlpatterns = [
     path('lista-ventas',lista_ventas,name='lista_ventas'),
     path('imprimir-venta/<int:id>',imprimir_venta,name='imprimir_venta'),
     path('estadisticas',estadisticas, name='estadisticas'),
+    path('elimianar-venta/<int:id>',eliminar_venta,name='eliminar_venta'),
 
     
 ]

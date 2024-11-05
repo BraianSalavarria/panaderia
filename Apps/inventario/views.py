@@ -68,12 +68,15 @@ def eliminar_proveedor(request, id):
     return  redirect(to='inventario:lista_proveedores')
 
 #---------------------------------------INSUMOS------------------------------------------------------------------
+@login_required(login_url='usuario:login')
+@permission_required('inventario.view_insumo', raise_exception=True)
 def lista_stock(request):
     stock = Insumo.objects.all()
     proveedores = Proveedor.objects.all()
     return render(request,'inventario/administrarStock.html',{'stock':stock,'proveedores':proveedores})
 
-
+@login_required(login_url='usuario:login')
+@permission_required('inventario.add_insumo', raise_exception=True)
 def agregar_insumo(request):
 
     if request.method == 'POST':
@@ -94,6 +97,10 @@ def agregar_insumo(request):
 
     return redirect(to='inventario:stock_disponible')
 
+
+
+@login_required(login_url='usuario:login')
+@permission_required('inventario.change_insumo', raise_exception=True)
 def editar_proveedor_insumo(request,id):
     if request.method == 'POST':
         insumo = get_object_or_404(Insumo, id = id)
@@ -106,6 +113,8 @@ def editar_proveedor_insumo(request,id):
         return redirect(to='inventario:stock_disponible')
 
 
+@login_required(login_url='usuario:login')
+@permission_required('inventario.delete_insumo', raise_exception=True)
 def eliminar_proveedor_insumo(request,id):
         if request.method == 'POST':
             insumo = get_object_or_404(Insumo, id = id)
@@ -117,6 +126,8 @@ def eliminar_proveedor_insumo(request,id):
                 messages.success(request,f'Proveedor "{proveedor_a_eliminar.nombre}" Eliminado Correctamente')
             return redirect('inventario:stock_disponible')
 
+@login_required(login_url='usuario:login')
+@permission_required('inventario.change_insumo', raise_exception=True)
 def editar_insumo(request):
     if request.method == 'POST':
         id_insumo = request.POST['id_insumo']
@@ -132,6 +143,8 @@ def editar_insumo(request):
 
         return redirect(to='inventario:stock_disponible')
 
+@login_required(login_url='usuario:login')
+@permission_required('inventario.delete_insumo', raise_exception=True)
 def eliminar_insumo(request,id):
     insumo = get_object_or_404(Insumo, id=id)
     if insumo:
@@ -143,6 +156,8 @@ def eliminar_insumo(request,id):
     return redirect(to='inventario:stock_disponible')
 
 #---------------------------------------- Pedidos--------------------------------------------------------------------
+@login_required(login_url='usuario:login')
+@permission_required('inventario.view_pedido', raise_exception=True)
 def registrar_pedido(request):
     proveedores = Proveedor.objects.all()
     formset = ItemsPedidosFormSet()
@@ -160,6 +175,9 @@ def obtener_insumos_proveedor(request,id):
 
 from django.contrib import messages
 
+@login_required(login_url='usuario:login')
+@permission_required('inventario.add_pedido', raise_exception=True)
+@permission_required('inventario.add_itempedido', raise_exception=True)
 def crear_item_pedido(request):
     if request.method == 'POST':
         # Obtenemos el ID del proveedor desde el formulario
@@ -231,12 +249,19 @@ def crear_item_pedido(request):
         return render(request, 'inventario/realizarPedido.html', {'proveedores': proveedores, 'formset': formset})
 
 
+
+@login_required(login_url='usuario:login')
+@permission_required('inventario.view_pedido', raise_exception=True)
 def lista_pedidos(request):
     pedidos = Pedido.objects.filter(estado=False)
     provedores = Proveedor.objects.all()
     formset = ItemsPedidosRecibidoFormSet()
     return render(request,'inventario/controlarPedido.html',{'pedidos':pedidos, 'proveedores':provedores,'formset':formset})
 
+
+
+@login_required(login_url='usuario:login')
+@permission_required('inventario.view_pedido', raise_exception=True)
 def detalles_pedido(request, id):
     pedido = get_object_or_404(Pedido, id = id)
     items = ItemPedido.objects.filter(pedido=pedido).values('insumo__nombre', 'cantidad')
@@ -248,6 +273,11 @@ def detalles_pedido(request, id):
         'items': list(items)
     }
     return JsonResponse(data)
+
+
+
+@login_required(login_url='usuario:login')
+@permission_required('inventario.add_pedidorecibido', raise_exception=True)
 
 def crear_item_pedido_recibido(request):
     if request.method == 'POST':
@@ -317,6 +347,9 @@ def crear_item_pedido_recibido(request):
     return redirect(to='inventario:lista_pedidos')
 
 
+@login_required(login_url='usuario:login')
+@permission_required('inventario.view_pedido', raise_exception=True)
+@permission_required('inventario.view_pedidorecibido', raise_exception=True)
 def todos_los_pedidos(request):
     pedidos = Pedido.objects.filter(estado=True)
     pedidos_recibidos = PedidoRecibido.objects.all()
@@ -324,6 +357,8 @@ def todos_los_pedidos(request):
     return render(request,'inventario/todosLosPedidos.html',{'pedidos':pedidos,'pedidos_recibidos':pedidos_recibidos})
 
 
+@login_required(login_url='usuario:login')
+@permission_required('inventario.delete_pedido', raise_exception=True)
 def eliminar_pedido(request,id):
     if request.method == 'GET':
         pedido = get_object_or_404(Pedido,id=id)
@@ -332,6 +367,8 @@ def eliminar_pedido(request,id):
         return redirect(to='inventario:todos_los_pedidos')
 
 
+@login_required(login_url='usuario:login')
+@permission_required('inventario.view_pedidorecibido', raise_exception=True)
 def detalles_pedido_recibido(request, id):
     pedido_recibido = get_object_or_404(PedidoRecibido, id = id)
     items = ItemPedidoRecicido.objects.filter(pedido_recibido=pedido_recibido).values('insumo__nombre', 'cantidad','precio_unit','total')
@@ -347,6 +384,9 @@ def detalles_pedido_recibido(request, id):
     }
     return JsonResponse(data)
 
+
+@login_required(login_url='usuario:login')
+@permission_required('inventario.delete_pedidorecibido', raise_exception=True)
 def eliminar_pedido_recibido(request,id):
     if request.method == 'GET':
         pedido_recibido = get_object_or_404(PedidoRecibido,id=id)

@@ -7,6 +7,33 @@
 <div class="card p-3" style="border-radius: 10px;">
               <p class="card-title">Lista de Ventas</p>
 
+    <div class="col-md-6 me-2">
+                            {% if messages %}
+
+                                {% for message in messages %}
+
+                                    {% if 'success' in message.tags %}
+                                       <div  class=" alert alert-success d-flex align-items-center" role="alert">
+                                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                                               <div>
+                                                           {{message}}
+                                               </div>
+                                       </div>
+                                       {% elif 'error' in message.tags %}
+                                       <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                           <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                               <div>
+                                                           {{message}}
+                                               </div>
+                                       </div>
+                                    {% endif %}
+
+                                {% endfor %}
+
+                            {% endif %}
+   </div>
+
+
 
     <div class="col-md-12">
 
@@ -30,7 +57,7 @@
                 <td>{{venta.fecha|date:"d/m/y"}}</td>
                 <td>{{venta.total}}</td>
                 <td>{{venta.empleado}}</td>
-                  <td>  <a  href="{% url 'ventas:imprimir_venta' venta.id %}"> <img src="{% static 'assets/icons/descarga.png' %}"> </a>   </td>
+                  <td>  <a class="me-4"  href="{% url 'ventas:imprimir_venta' venta.id %}"> <img src="{% static 'assets/icons/descarga.png' %}"> </a> {% if user.is_superuser == True %} <a class="btn btn-danger btn-sm" href="{% url 'ventas:eliminar_venta' venta.id %}">eliminar</a>{% endif %}  </td>
               </tr>
                 {% endfor %}
             </tbody>

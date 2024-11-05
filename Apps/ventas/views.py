@@ -307,6 +307,9 @@ import os
 from reportlab.lib.utils import ImageReader
 
 
+@login_required(login_url='usuario:login')
+@permission_required('ventas.view_venta', raise_exception=True)
+
 def imprimir_venta(request, id):
 
     #obtenemos la venta y sus detalles
@@ -406,7 +409,17 @@ def imprimir_venta(request, id):
 
     return response
 
+@login_required(login_url='usuario:login')
+@permission_required('ventas.view_venta', raise_exception=True)
 def estadisticas(request):
     empleados = Empleado.objects.annotate(nro_ventas=Count('ventas_realizadas')).order_by('-nro_ventas')
 
     return render(request,'ventas/estadisticas.html',{'empleados':empleados})
+
+@login_required(login_url='usuario:login')
+@permission_required('ventas.delete_venta', raise_exception=True)
+def eliminar_venta(request, id):
+    venta = get_object_or_404(Venta, id=id)
+    venta.delete()
+    messages.success(request,f'Venta Nro:"{venta.nro_comprobante}" Eliminado Exitosamente')
+    return redirect(to='ventas:lista_ventas')

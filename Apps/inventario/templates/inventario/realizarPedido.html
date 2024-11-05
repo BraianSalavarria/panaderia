@@ -3,7 +3,7 @@
 {% block contenido %}
 
         <div class="card p-3" style="border-radius: 10px;">
-              <p class="card-title">Administración de Stock</p>
+              <p class="card-title mb-3">Realizar Pedido</p>
                 <form class="formularioRegistrarPedido  " action="{% url 'inventario:crear_item_pedido' %}" method="POST">
                     {%csrf_token%}
 
@@ -19,7 +19,7 @@
                           <div class="col-md-2 me-4">
                               <div class="form-group">
                                 <label>Nro Pedido:</label>
-                                 <input type="text" id="nro_pedido" name="nro_pedido" class="form-control form-control-sm">
+                                 <input type="text" id="nro_pedido" name="nro_pedido" class="form-control form-control-sm" required>
                               </div>
                           </div>
 

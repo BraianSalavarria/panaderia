@@ -9,10 +9,10 @@
                     {%csrf_token%}
                   <div class="row">
 
-                          <div class="col-md-3 me-2">
+                          <div class="col-md-4 me-2">
                               <div class="form-group">
                                   <label>Descripcion:</label>
-                                  <input type="text" id="descripcion" name="descripcion" class="form-control form-control-sm">
+                                  <input type="text" id="descripcion" name="descripcion" class="form-control form-control-sm" placeholder="descripcion o nombre del insumo">
 
                               </div>
                           </div>
@@ -67,7 +67,7 @@
               <input type="text" class="form-control form-control-sm " id="buscarInsumo"  placeholder="Insumo" required oninput="filtrarTablaInsumos()">
           </div>
         </div>
-              <div class="table-responsive mt-1 mb-3 col-md-10" style="max-height: 400px; overflow-y: auto;">
+              <div class="table-responsive mt-1 mb-3 col-md-12" style="max-height: 400px; overflow-y: auto;">
                 <table class="table table-hover mb-4" id="tablaInsumos">
                   <thead>
                     <tr>
@@ -105,7 +105,7 @@
                                     <option value="{{ proveedor.id }}">{{ proveedor.nombre }} - {{ proveedor.empresa }}</option>
                                 {% endfor %}
                             </select>
-                            <button type="submit" class="btn btn-primary btn-sm ms-1">Guardar</button>
+                            <button type="submit" class="btn btn-primary btn-sm ms-1">Asignar</button>
                         </form>
                              </div>
                       </td>
@@ -120,7 +120,7 @@
                                     <option>No hay proveedores asignados</option>
                                 {% endfor %}
                             </select>
-                            <button type="submit" class="btn btn-danger btn-sm ms-1">Eliminar</button>
+                            <button type="submit" class="btn btn-danger btn-sm ms-1">Eliminar Proveedor</button>
                         </form>
 
                 </td>
